@@ -12,7 +12,6 @@ const viewNoteContainer = document.getElementById("view-note-container");
 const notesList = document.getElementById("notes-list");
 const notes = document.querySelectorAll(".notes");
 const noteTitle = document.querySelectorAll(".note-title");
-const cardNoteTitle = document.querySelectorAll(".card-note-title");
 
 const newDraft = document.getElementById("new-draft");
 const newNote = document.querySelectorAll(".new-note");
@@ -88,13 +87,6 @@ function aplicarGrid() {
 
     newDraft.style.width = "";
 } 
-
-cardNoteTitle.forEach((title) => {
-    title.addEventListener("click", () => {
-        notesContainer.style.display = "none";
-        viewNoteContainer.style.display = "flex";
-    })
-})
 
 newNote.forEach((button) => {
     button.addEventListener("click", () => {
@@ -336,7 +328,6 @@ function salvarNota() {
 
     localStorage.setItem("notas", JSON.stringify(notas));
 
-    console.log(notas)
 }
 
 saveBtn.addEventListener("click", () => {
@@ -359,14 +350,17 @@ saveBtn.addEventListener("click", () => {
 function exibirNotas() {
     const notas = JSON.parse(localStorage.getItem("notas")) || [];
 
+    notesList.innerHTML = "";
+
     notas.forEach((nota) => {
         const tags = nota.tags.map(tag => `<span class="tag">${tag}</span>`).join("")
 
         const card = document.createElement('div')
         card.className = "notes"
+        card.dataset.id = nota.id;
 
         card.innerHTML = `
-            <h3 class=".card-note-title">${nota.titulo}</h3>
+            <h3 class="card-note-title">${nota.titulo}</h3>
             <p class="note-content limitado">${nota.conteudo}</p>
             <div class="note-tags">
                 ${tags}
@@ -409,3 +403,34 @@ function exibirNotas() {
 }
 
 document.addEventListener("DOMContentLoaded", exibirNotas);
+
+function excluirNota(id) {
+    const notas = JSON.parse(localStorage.getItem("notas")) || [];
+
+    const novasNotas = notas.filter(nota => nota.id !== id);
+
+    localStorage.setItem("notas", JSON.stringify(novasNotas));
+
+    exibirNotas();
+}
+
+notesList.addEventListener("click", (event) => {
+
+    // Excluir nota
+    const deleteBtn = event.target.closest(".note-delete");
+
+    if (deleteBtn) {
+        const id = deleteBtn.closest(".notes").dataset.id;
+        excluirNota(id);
+        return;
+    }
+
+    // Abrir nota
+    const titulo = event.target.closest(".card-note-title");
+
+    if (titulo) {
+        notesContainer.style.display = "none";
+        viewNoteContainer.style.display = "flex";
+    }
+
+});

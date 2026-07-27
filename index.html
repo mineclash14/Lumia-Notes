@@ -20,7 +20,6 @@
                     <li><button class="navbtn" id="notas"><i class="fa-regular fa-note-sticky"></i> Notas</button></li>
                     <li><button class="navbtn" id="favoritos"><i class="fa-regular fa-star"></i> Favoritos</button></li>
                     <li><button class="navbtn" id="arquivadas"><i class="fa-regular fa-folder"></i> Arquivadas</button></li>
-                    <li><button class="navbtn" id="lixeira"><i class="fa-solid fa-trash"></i> Lixeira</button></li>
                 </ul>
             </nav>
 
@@ -81,9 +80,13 @@
                         </ul>
                     </div>
                 </div>
-                <div id="notes-list">
+                <div id="notes-wrapper">
+                    <div id="notes-list"></div>
+
                     <div id="new-draft">
-                        <button id="main-new-note" class="new-note"><i class="fa-solid fa-plus"></i></button>
+                        <button id="main-new-note" class="new-note">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
                         <h3>Nova Nota</h3>
                     </div>
                 </div>
@@ -166,8 +169,8 @@
                     </ul>
                 </div>
                 <div id="text-editor-container">
-                    <input type="text" id="title" placeholder="Title">
-                    <textarea name="content" id="text-content" placeholder="Text"></textarea>
+                    <input type="text" id="title" placeholder="Title" required>
+                    <textarea name="content" id="text-content" placeholder="Text" required></textarea>
                 </div>
             </section>
 

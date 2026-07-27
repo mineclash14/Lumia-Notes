@@ -55,6 +55,7 @@ body {
   flex-direction: column;
   background-color: var(--background-color);
   width: 17vw;
+  min-height: 100vh;
   padding: 25px;
   border-right: 2px solid var(--gray);
 }
@@ -331,6 +332,14 @@ hr {
   color: var(--white);
 }
 
+#notes-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
 #notes-list {
   display: flex;
   flex-direction: row;
@@ -418,17 +427,17 @@ hr {
 
 .note-footer ul li button,
 .note-footer ul li .note-action {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
 }
 
 .note-footer ul li i {
-    font-size: 16px;
-    width: 16px;
-    text-align: center;
+  font-size: 16px;
+  width: 16px;
+  text-align: center;
 }
 
 .note-action input {
@@ -484,11 +493,17 @@ hr {
 }
 
 .return-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 70px;
   height: 70px;
-  font-size: 2em;
-  border-radius: 50%;
+  min-width: 70px;
+  min-height: 70px;
+  flex-shrink: 0;
   border: 1px solid var(--white);
+  border-radius: 50%;
+  font-size: 2em;
 }
 
 .return-btn:hover{
