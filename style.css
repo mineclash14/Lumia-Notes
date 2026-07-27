@@ -366,6 +366,14 @@ hr {
   cursor: pointer;
 }
 
+.note-tags {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow: hidden;
+  width: 100%;
+}
+
 .tag {
   display: inline-block;
   background-color: #1e77ec28;
@@ -373,6 +381,12 @@ hr {
   padding: 2px 8px;
   border-radius: 20px;
   font-size: 12px;
+
+  flex-shrink: 0;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .note-footer {
@@ -438,6 +452,7 @@ hr {
   border: 1px dashed var(--white);
   width: 300px;
   height: 350px;
+  order: 999;
 }
 
 #main-new-note {

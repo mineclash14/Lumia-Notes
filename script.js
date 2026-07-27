@@ -72,16 +72,16 @@ listViewBtn.addEventListener("click", () => {
 });
 
 function aplicarLista() {
-    notes.forEach((note) => {
+    document.querySelectorAll(".notes").forEach(note => {
         note.style.width = "80%";
-        note.style.padding = "30px 50px 30px 50px";
+        note.style.padding = "30px 50px";
     });
 
     newDraft.style.width = "80%";
-} 
+}
 
 function aplicarGrid() {
-    notes.forEach((note) => {
+    document.querySelectorAll(".notes").forEach((note) => {
         note.style.width = "";
         note.style.padding = "";
     });
@@ -344,6 +344,8 @@ saveBtn.addEventListener("click", () => {
 
     salvarNota();
 
+    exibirNotas();
+
     setTimeout(() => {
         mostrarToast("Nota salva com sucesso!");
     }, 1000);
@@ -354,3 +356,56 @@ saveBtn.addEventListener("click", () => {
     editorTagsContainer.innerHTML = "";
 })
 
+function exibirNotas() {
+    const notas = JSON.parse(localStorage.getItem("notas")) || [];
+
+    notas.forEach((nota) => {
+        const tags = nota.tags.map(tag => `<span class="tag">${tag}</span>`).join("")
+
+        const card = document.createElement('div')
+        card.className = "notes"
+
+        card.innerHTML = `
+            <h3 class=".card-note-title">${nota.titulo}</h3>
+            <p class="note-content limitado">${nota.conteudo}</p>
+            <div class="note-tags">
+                ${tags}
+            </div>
+
+            <div class="note-footer">
+                <p class="note-date">${new Date(nota.data).toLocaleDateString()}</p>
+                <ul>
+                    <li>
+                        <label class="note-action">
+                            <input type="checkbox" class="note-favorite" ${nota.favorito ? "checked" : ""}>
+                            <i class="fa-regular fa-star"></i>
+                        </label>
+                    </li>
+
+                    <li>
+                        <label class="note-action">
+                            <input type="checkbox" class="note-archive" ${nota.arquivado ? "checked" : ""}>
+                            <i class="fa-solid fa-box-archive"></i>
+                        </label>
+                    </li>
+
+                    <li>
+                        <button class="note-delete">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </li>
+
+                    <li>
+                        <button class="note-edit">
+                            <i class="fa-regular fa-edit"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        `;
+
+        notesList.appendChild(card);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", exibirNotas);
