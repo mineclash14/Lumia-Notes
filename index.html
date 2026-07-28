@@ -66,16 +66,16 @@
 
         <main>
             <section id="notes-container">
-                <div id="header-notes" class="headers">
+                <div class="header-notes headers">
                     <div>
                         <h1>Notas</h1>
                         <p>Updated 5 minutes ago</p>
                     </div>
-                    <div id="header-notes-nav">
+                    <div class="header-notes-nav">
                         <ul>
-                            <li id="view-mode">
-                                <button id="grid-view-btn"><i class="fa-solid fa-border-all"></i></button>
-                                <button id="list-view-btn"><i class="fa-solid fa-list"></i></button>
+                            <li class="view-mode">
+                                <button class="grid-view-btn"><i class="fa-solid fa-border-all"></i></button>
+                                <button class="list-view-btn"><i class="fa-solid fa-list"></i></button>
                             </li>
                         </ul>
                     </div>
@@ -89,6 +89,46 @@
                         </button>
                         <h3>Nova Nota</h3>
                     </div>
+                </div>
+            </section>
+
+            <section id="notes-container-favorite">
+                <div class="header-notes headers">
+                    <div>
+                        <h1>Notas Favoritas</h1>
+                        <p>Updated 5 minutes ago</p>
+                    </div>
+                    <div class="header-notes-nav">
+                        <ul>
+                            <li class="view-mode">
+                                <button class="grid-view-btn"><i class="fa-solid fa-border-all"></i></button>
+                                <button class="list-view-btn"><i class="fa-solid fa-list"></i></button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="notes-wrapper-favorite">
+                    <div id="notes-list-favorite"></div>
+                </div>
+            </section>
+
+            <section id="notes-container-archive">
+                <div class="header-notes headers">
+                    <div>
+                        <h1>Notas Arquivadas</h1>
+                        <p>Updated 5 minutes ago</p>
+                    </div>
+                    <div class="header-notes-nav">
+                        <ul>
+                            <li class="view-mode">
+                                <button class="grid-view-btn"><i class="fa-solid fa-border-all"></i></button>
+                                <button class="list-view-btn"><i class="fa-solid fa-list"></i></button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="notes-wrapper-archive">
+                    <div id="notes-list-archive"></div>
                 </div>
             </section>
 
@@ -182,11 +222,6 @@
                         </button>
 
                         <div id="view-note-info">
-                            <div class="note-tags">
-                                <span class="tag"></span>
-                                <span class="tag"></span>
-                            </div>
-                            <p class="note-date"></p>
                         </div>
                     </div>
                     <div id="view-note-nav">
@@ -197,17 +232,17 @@
                     </div>
                 </div>
                 <div id="view-note">
-                    <h1 id="view-note-title" class="note-title"></h1>
-                    <div id="view-note-content" class="note-content"></div>
+
                 </div>
             </section>
+            
             <section id="statistics-container">
                 <div class="statistics">
                     <div class="statistic-icon notes-icon"><i class="fa-regular fa-file-lines" style="color: rgb(116, 192, 252);"></i></div>
                     <div class="statistic-content">
                         <p>Conteúdo total</p>
                         <div class="statistic-info">
-                            <h2 class="statistic-value">0</h2>
+                            <h2 class="statistic-value" id="statistic-value-notes">0</h2>
                             <h2 class="statistic-title">Notas</h2>
                         </div>
                     </div>
@@ -217,7 +252,7 @@
                     <div class="statistic-content">
                         <p>Favoritas</p>
                         <div class="statistic-info">
-                            <h2 class="statistic-value">0</h2>
+                            <h2 class="statistic-value" id="statistic-value-favorito">0</h2>
                             <h2 class="statistic-title">Items</h2>
                         </div>
                     </div>
@@ -227,7 +262,7 @@
                     <div class="statistic-content">
                         <p>Arquivadas</p>
                         <div class="statistic-info">
-                            <h2 class="statistic-value">0</h2>
+                            <h2 class="statistic-value" id="statistic-value-archive">0</h2>
                             <h2 class="statistic-title">Items</h2>
                         </div>
                     </div>

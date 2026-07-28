@@ -1,4 +1,10 @@
+// Toast
 const toast = document.getElementById("toast");
+
+// Sidebar nav
+const sidebarNotesBtn = document.getElementById("notas");
+const sidebarFavBtn = document.getElementById("favoritos");
+const sidebarArquivBtn = document.getElementById("arquivadas");
 
 // Configuração
 const perfilconfigbtn = document.getElementById("perfil-config-btn");
@@ -6,10 +12,19 @@ const perfilconfig = document.getElementById("perfil-config");
 
 // Visualização das notas
 const notesContainer = document.getElementById("notes-container");
+const notesContFavorite = document.getElementById("notes-container-favorite")
+const notasContArchive = document.getElementById("notes-container-archive")
+
 const notesEditor = document.getElementById("notes-editor");
 const viewNoteContainer = document.getElementById("view-note-container");
 
+const viewNoteInfo = document.getElementById("view-note-info")
+const viewNote = document.getElementById("view-note")
+
 const notesList = document.getElementById("notes-list");
+const favoriteList = document.getElementById("notes-list-favorite")
+const archiveList = document.getElementById("notes-list-archive")
+
 const notes = document.querySelectorAll(".notes");
 const noteTitle = document.querySelectorAll(".note-title");
 
@@ -17,8 +32,8 @@ const newDraft = document.getElementById("new-draft");
 const newNote = document.querySelectorAll(".new-note");
 
 // Navegação
-const gridViewBtn = document.getElementById("grid-view-btn");
-const listViewBtn = document.getElementById("list-view-btn");
+const gridViewBtn = document.querySelectorAll(".grid-view-btn");
+const listViewBtn = document.querySelectorAll(".list-view-btn");
 
 const editorReturnBtn = document.getElementById("editor-return-btn");
 const viewReturnBtn = document.getElementById("view-return-btn");
@@ -53,22 +68,58 @@ const tagsInsertContainer = document.getElementById("tags-insert-container")
 const tagInsertInput = document.getElementById("tag-insert-input")
 const tagInsertBtn = document.getElementById("tag-insert")
 
+// Statistics 
+const statisticValueNotes = document.getElementById("statistic-value-notes");
+const statisticValueFavorito = document.getElementById("statistic-value-favorito")
+const statisticValueArchive = document.getElementById("statistic-value-archive")
+
+sidebarNotesBtn.addEventListener("click", () => {
+    notesContainer.style.display = "flex"
+    notesContFavorite.style.display = "none"
+    notasContArchive.style.display = "none"
+    notesEditor.style.display = "none"
+    viewNoteContainer.style.display = "none"
+    renderizarNotas(notasNormais, notesList);
+})
+
+sidebarFavBtn.addEventListener("click", () => {
+    notesContainer.style.display = "none"
+    notesContFavorite.style.display = "flex"
+    notasContArchive.style.display = "none"
+    notesEditor.style.display = "none"
+    viewNoteContainer.style.display = "none"
+    renderizarNotas(favoritos, favoriteList);
+})
+
+sidebarArquivBtn.addEventListener("click", () => {
+    notesContainer.style.display = "none"
+    notesContFavorite.style.display = "none"
+    notasContArchive.style.display = "flex"
+    notesEditor.style.display = "none"
+    viewNoteContainer.style.display = "none"
+    renderizarNotas(arquivadas, archiveList);
+})
+
 perfilconfigbtn.addEventListener("change", (event) => {
     perfilconfig.setAttribute("class", event.target.checked ? "ativo" : "")
 });
 
-gridViewBtn.addEventListener("click", () => {
-    notesList.style.flexDirection = "row";
-    notesList.style.flexWrap = "wrap";
-    aplicarGrid();
-});
+gridViewBtn.forEach((button) => {
+    button.addEventListener("click", () => {
+        notesList.style.flexDirection = "row";
+        notesList.style.flexWrap = "wrap";
+        aplicarGrid();
+    });
+})
 
-listViewBtn.addEventListener("click", () => {
-    notesList.style.flexDirection = "column";
-    notesList.style.flexWrap = "nowrap";
-    notesList.style.alignItems = "center";
-    aplicarLista();
-});
+listViewBtn.forEach((button) => {
+    button.addEventListener("click", () => {
+        notesList.style.flexDirection = "column";
+        notesList.style.flexWrap = "nowrap";
+        notesList.style.alignItems = "center";
+        aplicarLista();
+    });
+})
 
 function aplicarLista() {
     document.querySelectorAll(".notes").forEach(note => {
@@ -330,6 +381,11 @@ function salvarNota() {
 
 }
 
+function atualizarContadorNotas() {
+    const notas = JSON.parse(localStorage.getItem("notas")) || [];
+    statisticValueNotes.textContent = notas.length;
+}
+
 saveBtn.addEventListener("click", () => {
     mostrarToast("Salvando nota...");
 
@@ -339,7 +395,9 @@ saveBtn.addEventListener("click", () => {
 
     setTimeout(() => {
         mostrarToast("Nota salva com sucesso!");
-    }, 1000);
+    }, 2000);
+
+    atualizarContadorNotas()
 
     tags_array = [];
     title.value = '';
@@ -347,12 +405,36 @@ saveBtn.addEventListener("click", () => {
     editorTagsContainer.innerHTML = "";
 })
 
-function exibirNotas() {
+function filtrarNotas() {
+    // Notas
     const notas = JSON.parse(localStorage.getItem("notas")) || [];
 
-    notesList.innerHTML = "";
+    // Seção Notas
+    const notasNormais = notas;
 
-    notas.forEach((nota) => {
+    // Seção Favoritos
+    const favoritos = notas.filter(nota =>
+        nota.favorito && !nota.arquivado
+    );
+
+    // Seção Arquivadas
+    const arquivadas = notas.filter(nota =>
+        nota.arquivado
+    );
+
+    return {
+        notasNormais,
+        favoritos,
+        arquivadas
+    };
+}
+
+const { notasNormais, favoritos, arquivadas } = filtrarNotas();
+
+function renderizarNotas(lista, container) {
+    container.innerHTML = "";
+
+    lista.forEach((nota) => {
         const tags = nota.tags.map(tag => `<span class="tag">${tag}</span>`).join("")
 
         const card = document.createElement('div')
@@ -398,11 +480,15 @@ function exibirNotas() {
             </div>
         `;
 
-        notesList.appendChild(card);
+        container.appendChild(card);
     });
 }
 
-document.addEventListener("DOMContentLoaded", exibirNotas);
+document.addEventListener("DOMContentLoaded", 
+    renderizarNotas(notasNormais, notesList),
+    atualizarContadorNotas(),
+    atualizarContadorFavoritos(),
+    atualizarContadorArquivados());
 
 function excluirNota(id) {
     const notas = JSON.parse(localStorage.getItem("notas")) || [];
@@ -411,7 +497,40 @@ function excluirNota(id) {
 
     localStorage.setItem("notas", JSON.stringify(novasNotas));
 
+    atualizarContadorNotas()
+
     exibirNotas();
+}
+
+function  exibirNotasView(id) {
+    const notas = JSON.parse(localStorage.getItem("notas")) || [];
+
+    const nota = notas.find(n => n.id === id);
+
+    if (!nota) return;
+
+    viewNoteInfo.innerHTML = "";
+
+    const tags = nota.tags.map(tag => `<span class="tag">${tag}</span>`).join("")
+
+    const noteTags = document.createElement('div')
+    noteTags.className = "note-tags"
+
+    noteTags.innerHTML = `
+        ${tags}
+    `
+
+    const noteDate = document.createElement("p");
+    noteDate.className = "note-date";
+    noteDate.textContent = new Date(nota.data).toLocaleDateString();
+
+    viewNoteInfo.appendChild(noteTags);
+    viewNoteInfo.appendChild(noteDate);    
+
+    viewNote.innerHTML = `
+        <h1 id="view-note-title" class="note-title">${nota.titulo}</h1>
+        <div id="view-note-content" class="note-content">${nota.conteudo}</div>
+    `;
 }
 
 notesList.addEventListener("click", (event) => {
@@ -429,8 +548,62 @@ notesList.addEventListener("click", (event) => {
     const titulo = event.target.closest(".card-note-title");
 
     if (titulo) {
+        const id = titulo.closest(".notes").dataset.id;
+
         notesContainer.style.display = "none";
         viewNoteContainer.style.display = "flex";
+        
+        exibirNotasView(id);
+    }
+
+});
+
+function atualizarContadorFavoritos() {
+    const notas = JSON.parse(localStorage.getItem("notas")) || [];
+
+    const totalFavoritas = notas.filter(nota => nota.favorito).length;
+
+    statisticValueFavorito.textContent = totalFavoritas;
+}
+
+function atualizarContadorArquivados() {
+    const notas = JSON.parse(localStorage.getItem("notas")) || [];
+
+    const totalArquivados = notas.filter(nota => nota.arquivado).length
+
+    statisticValueArchive.textContent = totalArquivados
+}
+
+notesList.addEventListener("change", (event) => {
+
+    if (event.target.classList.contains("note-favorite")) {
+        const id = event.target.closest(".notes").dataset.id;
+        const notas = JSON.parse(localStorage.getItem("notas")) || [];
+
+        const nota = notas.find(n => n.id === id);
+
+        if (!nota) return;
+
+        nota.favorito = event.target.checked;
+
+        localStorage.setItem("notas", JSON.stringify(notas));
+
+        atualizarContadorFavoritos();
+    }
+
+    if (event.target.classList.contains("note-archive")) {
+        const id = event.target.closest(".notes").dataset.id;
+        const notas = JSON.parse(localStorage.getItem("notas")) || [];
+
+        const nota = notas.find(n => n.id === id);
+
+        if (!nota) return;
+
+        nota.arquivado = event.target.checked;
+
+        localStorage.setItem("notas", JSON.stringify(notas));
+
+        atualizarContadorArquivados();
     }
 
 });
