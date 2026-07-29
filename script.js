@@ -31,6 +31,10 @@ const noteTitle = document.querySelectorAll(".note-title");
 const newDraft = document.getElementById("new-draft");
 const newNote = document.querySelectorAll(".new-note");
 
+// Placeholders
+const arquivPlaceholder = document.getElementById("placeholder-archive")
+const favPlaceholder = document.getElementById("placeholder-favorite")
+
 // Navegação
 const gridViewBtn = document.querySelectorAll(".grid-view-btn");
 const listViewBtn = document.querySelectorAll(".list-view-btn");
@@ -413,6 +417,11 @@ function filtrarNotas() {
     };
 }
 
+function atualizarPlaceholders(favoritos, arquivadas) {
+    favPlaceholder.style.display = favoritos.length ? "none" : "block";
+    arquivPlaceholder.style.display = arquivadas.length ? "none" : "block";
+}
+
 function atualizarNotas() {
     const {
         notasNormais,
@@ -423,6 +432,8 @@ function atualizarNotas() {
     renderizarNotas(notasNormais, notesList);
     renderizarNotas(favoritos, favoriteList);
     renderizarNotas(arquivadas, archiveList);
+
+    atualizarPlaceholders(favoritos, arquivadas)
 
     atualizarContadorNotas();
     atualizarContadorFavoritos();
