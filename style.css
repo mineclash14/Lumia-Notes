@@ -346,10 +346,11 @@ hr {
   color: var(--white);
 }
 
-#notes-wrapper, #notes-wrapper-favorite, #notes-wrapper-archive {
+.notes-wrapper {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  align-items: center;
   gap: 25px;
   flex-wrap: wrap;
 }
