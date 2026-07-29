@@ -362,6 +362,41 @@ hr {
   flex-wrap: wrap;
 }
 
+#notes-list.grid-view,
+#notes-list-favorite.grid-view,
+#notes-list-archive.grid-view {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: initial;
+}
+
+#notes-list.grid-view .notes,
+#notes-list-favorite.grid-view .notes,
+#notes-list-archive.grid-view .notes {
+  width: 300px;
+  padding: 30px;
+}
+
+#notes-list.list-view,
+#notes-list-favorite.list-view,
+#notes-list-archive.list-view {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 100%;
+}
+
+#notes-list.list-view .notes,
+#notes-list-favorite.list-view .notes,
+#notes-list-archive.list-view .notes {
+  width: 80%;
+  padding: 30px 50px;
+}
+
+#new-draft.list-view {
+  width: 80%;
+}
+
 .notes {
   display: flex;
   flex-direction: column;

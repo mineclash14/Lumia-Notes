@@ -79,7 +79,6 @@ sidebarNotesBtn.addEventListener("click", () => {
     notasContArchive.style.display = "none"
     notesEditor.style.display = "none"
     viewNoteContainer.style.display = "none"
-    renderizarNotas(notasNormais, notesList);
 })
 
 sidebarFavBtn.addEventListener("click", () => {
@@ -88,7 +87,6 @@ sidebarFavBtn.addEventListener("click", () => {
     notasContArchive.style.display = "none"
     notesEditor.style.display = "none"
     viewNoteContainer.style.display = "none"
-    renderizarNotas(favoritos, favoriteList);
 })
 
 sidebarArquivBtn.addEventListener("click", () => {
@@ -97,47 +95,43 @@ sidebarArquivBtn.addEventListener("click", () => {
     notasContArchive.style.display = "flex"
     notesEditor.style.display = "none"
     viewNoteContainer.style.display = "none"
-    renderizarNotas(arquivadas, archiveList);
 })
 
 perfilconfigbtn.addEventListener("change", (event) => {
     perfilconfig.setAttribute("class", event.target.checked ? "ativo" : "")
 });
 
-gridViewBtn.forEach((button) => {
-    button.addEventListener("click", () => {
-        notesList.style.flexDirection = "row";
-        notesList.style.flexWrap = "wrap";
-        aplicarGrid();
-    });
-})
+function aplicarGrid() {
+    notesList.classList.remove("list-view");
+    favoriteList.classList.remove("list-view");
+    archiveList.classList.remove("list-view");
 
-listViewBtn.forEach((button) => {
-    button.addEventListener("click", () => {
-        notesList.style.flexDirection = "column";
-        notesList.style.flexWrap = "nowrap";
-        notesList.style.alignItems = "center";
-        aplicarLista();
-    });
-})
+    notesList.classList.add("grid-view");
+    favoriteList.classList.add("grid-view");
+    archiveList.classList.add("grid-view");
 
-function aplicarLista() {
-    document.querySelectorAll(".notes").forEach(note => {
-        note.style.width = "80%";
-        note.style.padding = "30px 50px";
-    });
-
-    newDraft.style.width = "80%";
+    newDraft.classList.remove("list-view");
 }
 
-function aplicarGrid() {
-    document.querySelectorAll(".notes").forEach((note) => {
-        note.style.width = "";
-        note.style.padding = "";
-    });
+function aplicarLista() {
+    notesList.classList.remove("grid-view");
+    favoriteList.classList.remove("grid-view");
+    archiveList.classList.remove("grid-view");
 
-    newDraft.style.width = "";
-} 
+    notesList.classList.add("list-view");
+    favoriteList.classList.add("list-view");
+    archiveList.classList.add("list-view");
+
+    newDraft.classList.add("list-view");
+}
+
+gridViewBtn.forEach((button) => {
+    button.addEventListener("click", aplicarGrid);
+});
+
+listViewBtn.forEach((button) => {
+    button.addEventListener("click", aplicarLista);
+});
 
 newNote.forEach((button) => {
     button.addEventListener("click", () => {
@@ -215,10 +209,6 @@ function aplicarMarcadorListaOl() {
         end,
         "select"
     )
-}
-
-function aplicarMarcadorImagem() {
-
 }
 
 titleH1Btn.addEventListener("click", () => {
@@ -391,13 +381,11 @@ saveBtn.addEventListener("click", () => {
 
     salvarNota();
 
-    exibirNotas();
+    atualizarNotas();
 
     setTimeout(() => {
         mostrarToast("Nota salva com sucesso!");
     }, 2000);
-
-    atualizarContadorNotas()
 
     tags_array = [];
     title.value = '';
@@ -406,18 +394,14 @@ saveBtn.addEventListener("click", () => {
 })
 
 function filtrarNotas() {
-    // Notas
     const notas = JSON.parse(localStorage.getItem("notas")) || [];
 
-    // Seção Notas
     const notasNormais = notas;
 
-    // Seção Favoritos
     const favoritos = notas.filter(nota =>
         nota.favorito && !nota.arquivado
     );
 
-    // Seção Arquivadas
     const arquivadas = notas.filter(nota =>
         nota.arquivado
     );
@@ -429,7 +413,21 @@ function filtrarNotas() {
     };
 }
 
-const { notasNormais, favoritos, arquivadas } = filtrarNotas();
+function atualizarNotas() {
+    const {
+        notasNormais,
+        favoritos,
+        arquivadas
+    } = filtrarNotas();
+
+    renderizarNotas(notasNormais, notesList);
+    renderizarNotas(favoritos, favoriteList);
+    renderizarNotas(arquivadas, archiveList);
+
+    atualizarContadorNotas();
+    atualizarContadorFavoritos();
+    atualizarContadorArquivados();
+}
 
 function renderizarNotas(lista, container) {
     container.innerHTML = "";
@@ -485,10 +483,8 @@ function renderizarNotas(lista, container) {
 }
 
 document.addEventListener("DOMContentLoaded", 
-    renderizarNotas(notasNormais, notesList),
-    atualizarContadorNotas(),
-    atualizarContadorFavoritos(),
-    atualizarContadorArquivados());
+    atualizarNotas()
+);
 
 function excluirNota(id) {
     const notas = JSON.parse(localStorage.getItem("notas")) || [];
@@ -497,9 +493,7 @@ function excluirNota(id) {
 
     localStorage.setItem("notas", JSON.stringify(novasNotas));
 
-    atualizarContadorNotas()
-
-    exibirNotas();
+    atualizarNotas();
 }
 
 function  exibirNotasView(id) {
@@ -533,28 +527,37 @@ function  exibirNotasView(id) {
     `;
 }
 
-notesList.addEventListener("click", (event) => {
+[notesList, favoriteList, archiveList].forEach(container => {
 
-    // Excluir nota
-    const deleteBtn = event.target.closest(".note-delete");
+    container.addEventListener("click", (event) => {
 
-    if (deleteBtn) {
-        const id = deleteBtn.closest(".notes").dataset.id;
-        excluirNota(id);
-        return;
-    }
+        // Excluir
+        const deleteBtn = event.target.closest(".note-delete");
 
-    // Abrir nota
-    const titulo = event.target.closest(".card-note-title");
+        if (deleteBtn) {
+            const id = deleteBtn.closest(".notes").dataset.id;
 
-    if (titulo) {
-        const id = titulo.closest(".notes").dataset.id;
+            excluirNota(id);
 
-        notesContainer.style.display = "none";
-        viewNoteContainer.style.display = "flex";
-        
-        exibirNotasView(id);
-    }
+            return;
+        }
+
+        // Abrir nota
+        const titulo = event.target.closest(".card-note-title");
+
+        if (titulo) {
+            const id = titulo.closest(".notes").dataset.id;
+
+            notesContainer.style.display = "none";
+            notesContFavorite.style.display = "none";
+            notasContArchive.style.display = "none";
+
+            viewNoteContainer.style.display = "flex";
+
+            exibirNotasView(id);
+        }
+
+    });
 
 });
 
@@ -574,36 +577,38 @@ function atualizarContadorArquivados() {
     statisticValueArchive.textContent = totalArquivados
 }
 
-notesList.addEventListener("change", (event) => {
+[notesList, favoriteList, archiveList].forEach(container => {
 
-    if (event.target.classList.contains("note-favorite")) {
-        const id = event.target.closest(".notes").dataset.id;
+    container.addEventListener("change", (event) => {
+
+        const card = event.target.closest(".notes");
+        if (!card) return;
+        const id = card.dataset.id;
         const notas = JSON.parse(localStorage.getItem("notas")) || [];
-
         const nota = notas.find(n => n.id === id);
-
         if (!nota) return;
 
-        nota.favorito = event.target.checked;
+
+        // Favorito
+        if (event.target.classList.contains("note-favorite")) {
+
+            nota.favorito = event.target.checked;
+
+        }
+
+
+        // Arquivado
+        if (event.target.classList.contains("note-archive")) {
+
+            nota.arquivado = event.target.checked;
+
+        }
+
 
         localStorage.setItem("notas", JSON.stringify(notas));
 
-        atualizarContadorFavoritos();
-    }
+        atualizarNotas();
 
-    if (event.target.classList.contains("note-archive")) {
-        const id = event.target.closest(".notes").dataset.id;
-        const notas = JSON.parse(localStorage.getItem("notas")) || [];
-
-        const nota = notas.find(n => n.id === id);
-
-        if (!nota) return;
-
-        nota.arquivado = event.target.checked;
-
-        localStorage.setItem("notas", JSON.stringify(notas));
-
-        atualizarContadorArquivados();
-    }
+    });
 
 });
