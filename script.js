@@ -1,17 +1,24 @@
 // Toast
-const toast = document.getElementById("toast");
+const toast = document.querySelector(".toast");
 
-// Sidebar nav
-const sidebarNotesBtn = document.getElementById("notas");
-const sidebarFavBtn = document.getElementById("favoritos");
-const sidebarArquivBtn = document.getElementById("arquivadas");
+// Sidebar
+const sidebar = document.querySelector(".sidebar");
+const sidebarNotesBtn = document.getElementById("notes-tab");
+const sidebarFavBtn = document.getElementById("favorites-tab");
+const sidebarArquivBtn = document.getElementById("archive-tab");
+
+// Show sidebar
+const showSidebarMobileBtn = document.getElementById("show-sidebar-mobile-btn");
+const closeSidebarMobileBtn = document.querySelector(".close-sidebar-mobile-btn");
+const tabletSidebarToggle = document.querySelector(".tablet-sidebar-toggle");
+const showSidebarTabletBtn = document.getElementById("show-sidebar-tablet-btn");
 
 // Configuração
 const perfilconfigbtn = document.getElementById("perfil-config-btn");
 const perfilconfig = document.getElementById("perfil-config");
 
 // Visualização das notas
-const notesContainer = document.getElementById("notes-container");
+const notesContainer = document.getElementById("all-notes-container");
 const notesContFavorite = document.getElementById("notes-container-favorite")
 const notasContArchive = document.getElementById("notes-container-archive")
 
@@ -32,6 +39,7 @@ const newDraft = document.getElementById("new-draft");
 const newNote = document.querySelectorAll(".new-note");
 
 // Placeholders
+const notePlaceholder = document.getElementById("placeholder-note")
 const arquivPlaceholder = document.getElementById("placeholder-archive")
 const favPlaceholder = document.getElementById("placeholder-favorite")
 
@@ -76,6 +84,25 @@ const tagInsertBtn = document.getElementById("tag-insert")
 const statisticValueNotes = document.getElementById("statistic-value-notes");
 const statisticValueFavorito = document.getElementById("statistic-value-favorito")
 const statisticValueArchive = document.getElementById("statistic-value-archive")
+
+showSidebarMobileBtn.addEventListener("change", (event) => {
+    event.target.checked ? sidebar.style.display = "flex" : sidebar.style.display = "none";
+});
+
+closeSidebarMobileBtn.addEventListener("click", () => {
+    sidebar.style.display = "none";
+    showSidebarMobileBtn.checked = false;
+});
+
+showSidebarTabletBtn.addEventListener("change", (event) => {
+    if (event.target.checked) {
+        tabletSidebarToggle.style.left = "207px";
+        sidebar.style.left = "0px";
+    } else {
+        tabletSidebarToggle.style.left = "";
+        sidebar.style.left = "";
+    }
+})
 
 sidebarNotesBtn.addEventListener("click", () => {
     notesContainer.style.display = "flex"
@@ -395,6 +422,8 @@ saveBtn.addEventListener("click", () => {
     title.value = '';
     textArea.value = '';
     editorTagsContainer.innerHTML = "";
+    notesContainer.style.display = "flex";
+    notesEditor.style.display = "none";
 })
 
 function filtrarNotas() {
@@ -417,9 +446,14 @@ function filtrarNotas() {
     };
 }
 
-function atualizarPlaceholders(favoritos, arquivadas) {
+function atualizarPlaceholders(notas, favoritos, arquivadas) {
+    notePlaceholder.style.display = notas.length ? "none" : "flex";
     favPlaceholder.style.display = favoritos.length ? "none" : "block";
     arquivPlaceholder.style.display = arquivadas.length ? "none" : "block";
+}
+
+function atualizarNewDraft(notas) {
+    newDraft.style.display = notas.length ? "flex" : "none";
 }
 
 function atualizarNotas() {
@@ -433,7 +467,8 @@ function atualizarNotas() {
     renderizarNotas(favoritos, favoriteList);
     renderizarNotas(arquivadas, archiveList);
 
-    atualizarPlaceholders(favoritos, arquivadas)
+    atualizarPlaceholders(notasNormais, favoritos, arquivadas)
+    atualizarNewDraft(notasNormais)
 
     atualizarContadorNotas();
     atualizarContadorFavoritos();
