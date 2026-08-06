@@ -1,204 +1,252 @@
 // Toast
+
 const toast = document.querySelector(".toast");
 
 // Sidebar
-const sidebar = document.querySelector(".sidebar");
-const sidebarNotesBtn = document.getElementById("notes-tab");
-const sidebarFavBtn = document.getElementById("favorites-tab");
-const sidebarArquivBtn = document.getElementById("archive-tab");
+
+const sidebarElements = {
+    sidebar: document.querySelector(".sidebar"),
+    sidebarNotesBtn: document.getElementById("notes-tab"),
+    sidebarFavBtn: document.getElementById("favorites-tab"),
+    sidebarArquivBtn: document.getElementById("archive-tab"),
+}
 
 // Show sidebar
-const showSidebarMobileBtn = document.getElementById("show-sidebar-mobile-btn");
-const closeSidebarMobileBtn = document.querySelector(".close-sidebar-mobile-btn");
-const tabletSidebarToggle = document.querySelector(".tablet-sidebar-toggle");
-const showSidebarTabletBtn = document.getElementById("show-sidebar-tablet-btn");
+
+const showSidebarElements = {
+    showSidebarMobileBtn: document.getElementById("show-sidebar-mobile-btn"),
+    closeSidebarMobileBtn: document.querySelector(".close-sidebar-mobile-btn"),
+    tabletSidebarToggle: document.querySelector(".tablet-sidebar-toggle"),
+    showSidebarTabletBtn: document.getElementById("show-sidebar-tablet-btn")
+}
 
 // Configuração
+
 const perfilconfigbtn = document.getElementById("perfil-config-btn");
 const perfilconfig = document.getElementById("perfil-config");
 
 // Visualização das notas
-const notesContainer = document.getElementById("all-notes-container");
-const notesContFavorite = document.getElementById("notes-container-favorite")
-const notasContArchive = document.getElementById("notes-container-archive")
 
-const notesEditor = document.getElementById("notes-editor");
-const viewNoteContainer = document.getElementById("view-note-container");
+const notesElements = {
+    notesContainer: document.getElementById("all-notes-container"),
+    notesContFavorite: document.getElementById("notes-container-favorite"),
+    notasContArchive: document.getElementById("notes-container-archive"),
 
-const viewNoteInfo = document.getElementById("view-note-info")
-const viewNote = document.getElementById("view-note")
+    notesEditor: document.getElementById("notes-editor"),
+    viewNoteContainer: document.getElementById("view-note-container"),
 
-const notesList = document.getElementById("notes-list");
-const favoriteList = document.getElementById("notes-list-favorite")
-const archiveList = document.getElementById("notes-list-archive")
+    viewNoteInfo: document.getElementById("view-note-info"),
+    viewNote: document.getElementById("view-note"),
 
-const notes = document.querySelectorAll(".notes");
-const noteTitle = document.querySelectorAll(".note-title");
+    notesList: document.getElementById("notes-list"),
+    favoriteList: document.getElementById("notes-list-favorite"),
+    archiveList: document.getElementById("notes-list-archive"),
 
-const newDraft = document.getElementById("new-draft");
-const newNote = document.querySelectorAll(".new-note");
+    notes: document.querySelectorAll(".notes"),
+    noteTitle: document.querySelectorAll(".note-title"),
+
+    newDraft: document.getElementById("new-draft"),
+    newNote: document.querySelectorAll(".new-note"),
+}
 
 // Placeholders
-const notePlaceholder = document.getElementById("placeholder-note")
-const arquivPlaceholder = document.getElementById("placeholder-archive")
-const favPlaceholder = document.getElementById("placeholder-favorite")
+
+const placeholders = {
+    notePlaceholder: document.getElementById("placeholder-note"),
+    arquivPlaceholder: document.getElementById("placeholder-archive"),
+    favPlaceholder: document.getElementById("placeholder-favorite")
+}
 
 // Navegação
-const gridViewBtn = document.querySelectorAll(".grid-view-btn");
-const listViewBtn = document.querySelectorAll(".list-view-btn");
 
-const editorReturnBtn = document.getElementById("editor-return-btn");
-const viewReturnBtn = document.getElementById("view-return-btn");
+const navigationElements = {
+    gridViewBtn: document.querySelectorAll(".grid-view-btn"),
+    listViewBtn: document.querySelectorAll(".list-view-btn"),
+
+    editorReturnBtn: document.getElementById("editor-return-btn"),
+    viewReturnBtn: document.getElementById("view-return-btn")
+}
 
 // Editor
-const title = document.getElementById("title");
-const textArea = document.getElementById("text-content");
-const saveBtn = document.getElementById("save-btn")
-const editorTagsContainer = document.getElementById("editor-tags-container")
+
+const editorElements = { 
+    title: document.getElementById("title"),
+    textArea: document.getElementById("text-content"),
+    saveBtn: document.getElementById("save-btn"),
+    editorTagsContainer: document.getElementById("editor-tags-container")
+}
 
 // Toolbar
-const titleH1Btn = document.getElementById("title-h1-btn");
-const titleH2Btn = document.getElementById("title-h2-btn");
-const boldBtn = document.getElementById("bold-btn");
-const italicBtn = document.getElementById("italic-btn");
-const codeBtn = document.getElementById("code-btn");
-const listBtn = document.getElementById("list-btn");
-const list0lBtn = document.getElementById("list-ol-btn");
-const quoteBtn = document.getElementById("quote-btn");
-const imageBtn = document.getElementById("image-btn");
-const tagBtn = document.getElementById("tag-btn");
+
+const toolbarElements = {
+    titleH1Btn: document.getElementById("title-h1-btn"),
+    titleH2Btn: document.getElementById("title-h2-btn"),
+    boldBtn: document.getElementById("bold-btn"),
+    italicBtn: document.getElementById("italic-btn"),
+    codeBtn: document.getElementById("code-btn"),
+    listBtn: document.getElementById("list-btn"),
+    list0lBtn: document.getElementById("list-ol-btn"),
+    quoteBtn: document.getElementById("quote-btn"),
+    imageBtn: document.getElementById("image-btn"),
+    tagBtn: document.getElementById("tag-btn")
+}
+
 
 // Modal de imagem
-const imageInsertContainer = document.getElementById("image-insert-container");
-const imgAlt = document.getElementById("img-alt");
-const imgUrl = document.getElementById("img-url");
-const imageInsertBtn = document.getElementById("image-insert");
-const cancelImageInsertBtn = document.getElementById("cancel-image-insert");
+
+const modalImageElements = {
+    imageInsertBtn: document.getElementById("image-insert"),
+    cancelImageInsertBtn: document.getElementById("cancel-image-insert"),
+    imageInsertContainer: document.getElementById("image-insert-container"),
+    imgAlt: document.getElementById("img-alt"),
+    imgUrl: document.getElementById("img-url")
+}
 
 // Modal tag
-const tagsInsertContainer = document.getElementById("tags-insert-container")
-const tagInsertInput = document.getElementById("tag-insert-input")
-const tagInsertBtn = document.getElementById("tag-insert")
+
+const modalTagElements = {
+    tagsInsertContainer: document.getElementById("tags-insert-container"),
+    tagInsertInput: document.getElementById("tag-insert-input"),
+    tagInsertBtn: document.getElementById("tag-insert")
+}
 
 // Statistics 
-const statisticValueNotes = document.getElementById("statistic-value-notes");
-const statisticValueFavorito = document.getElementById("statistic-value-favorito")
-const statisticValueArchive = document.getElementById("statistic-value-archive")
 
-showSidebarMobileBtn.addEventListener("change", (event) => {
-    event.target.checked ? sidebar.style.display = "flex" : sidebar.style.display = "none";
+const statisticsElements = {
+    statisticValueNotes: document.getElementById("statistic-value-notes"),
+    statisticValueFavorito: document.getElementById("statistic-value-favorito"),
+    statisticValueArchive: document.getElementById("statistic-value-archive")
+}
+
+
+// Mostrar e ocultar sidebar no mobile e tablet
+
+showSidebarElements.showSidebarMobileBtn.addEventListener("change", (event) => {
+    event.target.checked ? sidebarElements.sidebar.style.display = "flex" : sidebarElements.sidebar.style.display = "none";
 });
 
-closeSidebarMobileBtn.addEventListener("click", () => {
-    sidebar.style.display = "none";
-    showSidebarMobileBtn.checked = false;
+showSidebarElements.closeSidebarMobileBtn.addEventListener("click", () => {
+    sidebarElements.sidebar.style.display = "none";
+    showSidebarElements.showSidebarMobileBtn.checked = false;
 });
 
-showSidebarTabletBtn.addEventListener("change", (event) => {
+showSidebarElements.showSidebarTabletBtn.addEventListener("change", (event) => {
     if (event.target.checked) {
-        tabletSidebarToggle.style.left = "207px";
-        sidebar.style.left = "0px";
+        showSidebarElements.tabletSidebarToggle.style.left = "207px";
+        sidebarElements.sidebar.style.left = "0px";
     } else {
-        tabletSidebarToggle.style.left = "";
-        sidebar.style.left = "";
+        showSidebarElements.tabletSidebarToggle.style.left = "";
+        sidebarElements.sidebar.style.left = "";
     }
 })
 
-sidebarNotesBtn.addEventListener("click", () => {
-    notesContainer.style.display = "flex"
-    notesContFavorite.style.display = "none"
-    notasContArchive.style.display = "none"
-    notesEditor.style.display = "none"
-    viewNoteContainer.style.display = "none"
-})
+// Mostrar telas
 
-sidebarFavBtn.addEventListener("click", () => {
-    notesContainer.style.display = "none"
-    notesContFavorite.style.display = "flex"
-    notasContArchive.style.display = "none"
-    notesEditor.style.display = "none"
-    viewNoteContainer.style.display = "none"
-})
+function mostrarTela(tela) {
+    notesElements.notesContainer.style.display = "none";
+    notesElements.notesContFavorite.style.display = "none";
+    notesElements.notasContArchive.style.display = "none";
+    notesElements.notesEditor.style.display = "none";
+    notesElements.viewNoteContainer.style.display = "none";
 
-sidebarArquivBtn.addEventListener("click", () => {
-    notesContainer.style.display = "none"
-    notesContFavorite.style.display = "none"
-    notasContArchive.style.display = "flex"
-    notesEditor.style.display = "none"
-    viewNoteContainer.style.display = "none"
-})
+    tela.style.display = "flex";
+}
+
+sidebarElements.sidebarNotesBtn.addEventListener("click", () => {
+    mostrarTela(notesElements.notesContainer);
+});
+
+sidebarElements.sidebarFavBtn.addEventListener("click", () => {
+    mostrarTela(notesElements.notesContFavorite);
+});
+
+sidebarElements.sidebarArquivBtn.addEventListener("click", () => {
+    mostrarTela(notesElements.notasContArchive);
+});
+
+// Configuração do perfil
 
 perfilconfigbtn.addEventListener("change", (event) => {
     perfilconfig.setAttribute("class", event.target.checked ? "ativo" : "")
 });
 
+// Mostrar visualização em grid ou lista
+
 function aplicarGrid() {
-    notesList.classList.remove("list-view");
-    favoriteList.classList.remove("list-view");
-    archiveList.classList.remove("list-view");
+    notesElements.notesList.classList.remove("list-view");
+    notesElements.favoriteList.classList.remove("list-view");
+    notesElements.archiveList.classList.remove("list-view");
 
-    notesList.classList.add("grid-view");
-    favoriteList.classList.add("grid-view");
-    archiveList.classList.add("grid-view");
+    notesElements.notesList.classList.add("grid-view");
+    notesElements.favoriteList.classList.add("grid-view");
+    notesElements.archiveList.classList.add("grid-view");
 
-    newDraft.classList.remove("list-view");
+    notesElements.newDraft.classList.remove("list-view");
 }
 
 function aplicarLista() {
-    notesList.classList.remove("grid-view");
-    favoriteList.classList.remove("grid-view");
-    archiveList.classList.remove("grid-view");
+    notesElements.notesList.classList.remove("grid-view");
+    notesElements.favoriteList.classList.remove("grid-view");
+    notesElements.archiveList.classList.remove("grid-view");
 
-    notesList.classList.add("list-view");
-    favoriteList.classList.add("list-view");
-    archiveList.classList.add("list-view");
+    notesElements.notesList.classList.add("list-view");
+    notesElements.favoriteList.classList.add("list-view");
+    notesElements.archiveList.classList.add("list-view");
 
-    newDraft.classList.add("list-view");
+    notesElements.newDraft.classList.add("list-view");
 }
 
-gridViewBtn.forEach((button) => {
+navigationElements.gridViewBtn.forEach((button) => {
     button.addEventListener("click", aplicarGrid);
 });
 
-listViewBtn.forEach((button) => {
+navigationElements.listViewBtn.forEach((button) => {
     button.addEventListener("click", aplicarLista);
 });
 
-newNote.forEach((button) => {
+// Mostrar editor de notas
+
+notesElements.newNote.forEach((button) => {
     button.addEventListener("click", () => {
-        notesContainer.style.display = "none";
-        notesEditor.style.display = "flex";
+        notesElements.notesContainer.style.display = "none";
+        notesElements.notesEditor.style.display = "flex";
     });
 })
 
-viewReturnBtn.addEventListener("click", () => {
-    notesContainer.style.display = "flex";
-    viewNoteContainer.style.display = "none";
+// Retornar para a lista de notas
+
+navigationElements.viewReturnBtn.addEventListener("click", () => {
+    notesElements.notesContainer.style.display = "flex";
+    notesElements.viewNoteContainer.style.display = "none";
 })
 
-editorReturnBtn.addEventListener("click", () => {
-    notesContainer.style.display = "flex";
-    notesEditor.style.display = "none";
+navigationElements.editorReturnBtn.addEventListener("click", () => {
+    notesElements.notesContainer.style.display = "flex";
+    notesElements.notesEditor.style.display = "none";
 })
+
+// Ajustar altura do textarea
 
 function ajustarAlturaTextarea() {
-    textArea.style.height = "auto";
-    textArea.style.height = textArea.scrollHeight + "px";
+    editorElements.textArea.style.height = "auto";
+    editorElements.textArea.style.height = editorElements.textArea.scrollHeight + "px";
 }
 
-textArea.addEventListener("input", ajustarAlturaTextarea);
+editorElements.textArea.addEventListener("input", ajustarAlturaTextarea);
 
 ajustarAlturaTextarea();
 
+// Aplicar marcadores de formatação
+
 function aplicarMarcadores(inicio, fim) {
-    textArea.focus();
+    editorElements.textArea.focus();
 
-    const start = textArea.selectionStart;
-    const end = textArea.selectionEnd;
+    const start = editorElements.textArea.selectionStart;
+    const end = editorElements.textArea.selectionEnd;
 
-    const textSelected = textArea.value.slice(start, end)
+    const textSelected = editorElements.textArea.value.slice(start, end)
 
-    textArea.setRangeText(
+    editorElements.textArea.setRangeText(
         inicio + textSelected + fim,
         start,
         end,
@@ -207,16 +255,16 @@ function aplicarMarcadores(inicio, fim) {
 }
 
 function aplicarMarcadorLista(prefixo) {
-    textArea.focus();
+    editorElements.textArea.focus();
 
-    const start = textArea.selectionStart;
-    const end = textArea.selectionEnd;
+    const start = editorElements.textArea.selectionStart;
+    const end = editorElements.textArea.selectionEnd;
 
-    const textoSelected = textArea.value.slice(start, end)
+    const textoSelected = editorElements.textArea.value.slice(start, end)
 
     const newText = textoSelected.split("\n").map(linha => prefixo + linha).join("\n")
 
-    textArea.setRangeText(
+    editorElements.textArea.setRangeText(
         newText,
         start,
         end,
@@ -225,16 +273,16 @@ function aplicarMarcadorLista(prefixo) {
 }
 
 function aplicarMarcadorListaOl() {
-    textArea.focus();
+    editorElements.textArea.focus();
 
-    const start = textArea.selectionStart;
-    const end = textArea.selectionEnd;
+    const start = editorElements.textArea.selectionStart;
+    const end = editorElements.textArea.selectionEnd;
 
-    const textoSelected = textArea.value.slice(start, end)
+    const textoSelected = editorElements.textArea.value.slice(start, end)
 
     const newText = textoSelected.split("\n").map((linha, index) => `${index + 1}. ${linha}`).join("\n")
 
-    textArea.setRangeText(
+    editorElements.textArea.setRangeText(
         newText,
         start,
         end,
@@ -242,56 +290,66 @@ function aplicarMarcadorListaOl() {
     )
 }
 
-titleH1Btn.addEventListener("click", () => {
+// Adicionar eventos aos botões da toolbar
+
+toolbarElements.titleH1Btn.addEventListener("click", () => {
     aplicarMarcadores("# ", "");
 })
 
-titleH2Btn.addEventListener("click", () => {
+toolbarElements.titleH2Btn.addEventListener("click", () => {
     aplicarMarcadores("## ", "");
 })
 
-boldBtn.addEventListener("click", () => {
+toolbarElements.boldBtn.addEventListener("click", () => {
     aplicarMarcadores("**", "**");
 })
 
-italicBtn.addEventListener("click", () => {
+toolbarElements.italicBtn.addEventListener("click", () => {
     aplicarMarcadores("*", "*");
 })
 
-codeBtn.addEventListener("click", () => {
+toolbarElements.codeBtn.addEventListener("click", () => {
     aplicarMarcadores("`", "`");
 })
 
-listBtn.addEventListener("click", () => {
+toolbarElements.listBtn.addEventListener("click", () => {
     aplicarMarcadorLista("- ");
 })
 
-list0lBtn.addEventListener("click", () => {
+toolbarElements.list0lBtn.addEventListener("click", () => {
     aplicarMarcadorListaOl()
 })
 
-quoteBtn.addEventListener("click", () => {
+toolbarElements.quoteBtn.addEventListener("click", () => {
     aplicarMarcadores('"', '"');
 })
 
-imageBtn.addEventListener("change", (event) => {
-    imageInsertContainer.setAttribute("class", event.target.checked ? "ativo" : "")
+toolbarElements.imageBtn.addEventListener("change", (event) => {
+    modalImageElements.imageInsertContainer.setAttribute("class", event.target.checked ? "ativo" : "")
 });
 
-cancelImageInsertBtn.addEventListener("click", () => {
-    imgAlt.value = '';
-    imgUrl.value = '';
-    imageBtn.checked = false;
-    imageInsertContainer.removeAttribute("class")
+toolbarElements.tagBtn.addEventListener("change", (event) => {
+    modalTagElements.tagsInsertContainer.setAttribute("class", event.target.checked ? "ativo" : "");
 });
+
+// Cancelar inserção de imagem
+
+modalImageElements.cancelImageInsertBtn.addEventListener("click", () => {
+    modalImageElements.imgAlt.value = '';
+    modalImageElements.imgUrl.value = '';
+    toolbarElements.imageBtn.checked = false;
+    modalImageElements.imageInsertContainer.removeAttribute("class")
+});
+
+// Validar URL da imagem
 
 function validarImgUrl() {
-    const url = imgUrl.value.trim();
-    const alt = imgAlt.value.trim();
+    const url = modalImageElements.imgUrl.value.trim();
+    const alt = modalImageElements.imgAlt.value.trim();
 
     if (url == "") {
         alert("Informe a URL da imagem.")
-        imgUrl.focus();
+        modalImageElements.imgUrl.focus();
         return false
     }
 
@@ -299,7 +357,7 @@ function validarImgUrl() {
 
     if (!urlRegex.test(url)) {
         alert("Informe uma URL de imagem válida.");
-        imgUrl.focus();
+        modalImageElements.imgUrl.focus();
         return false
     }
 
@@ -309,36 +367,36 @@ function validarImgUrl() {
     };
 }
 
-imageInsertBtn.addEventListener("click", () => {
+// Inserir imagem no editor
+
+modalImageElements.imageInsertBtn.addEventListener("click", () => {
     const dados = validarImgUrl();
 
     if (!dados) return;
 
     const markdown = `![${dados.alt}](${dados.url})`;
 
-    textArea.setRangeText(
+    editorElements.textArea.setRangeText(
         markdown,
-        textArea.selectionStart,
-        textArea.selectionEnd,
+        editorElements.textArea.selectionStart,
+        editorElements.textArea.selectionEnd,
         "end"
     )
 
-    imgAlt.value = '';
-    imgUrl.value = '';
-    imageBtn.checked = false;
-    imageInsertContainer.removeAttribute("class")
+    modalImageElements.imgAlt.value = '';
+    modalImageElements.imgUrl.value = '';
+    toolbarElements.imageBtn.checked = false;
+    modalImageElements.imageInsertContainer.removeAttribute("class")
 });
 
-tagBtn.addEventListener("change", (event) => {
-    tagsInsertContainer.setAttribute("class", event.target.checked ? "ativo" : "")
-});
+// Adicionar tag no editor
 
 function mostrarTagEditor() {
     const tag = document.createElement("div");
     tag.className = "editor-note-tag";
 
     tag.innerHTML = `
-        ${tagInsertInput.value}
+        ${modalTagElements.tagInsertInput.value}
         <button class="remove-editor-tag">
             <i class="fa-solid fa-xmark"></i>
         </button>
@@ -348,36 +406,41 @@ function mostrarTagEditor() {
         tag.remove();
     });
 
-    editorTagsContainer.appendChild(tag);
+    editorElements.editorTagsContainer.appendChild(tag);
 }
 
 let tags_array = []
 
-tagInsertBtn.addEventListener("click", () => {
-    const valor = tagInsertInput.value.trim();
+modalTagElements.tagInsertBtn.addEventListener("click", () => {
+    const valor = modalTagElements.tagInsertInput.value.trim();
 
     if (!valor) return;
 
     if (tags_array.includes(valor)) {
-        mostrarToast("Essa tag já foi adicionada.");
+        mostrarToast("Essa tag já foi adicionada.", "#d41b18");
         return;
     }
 
     mostrarTagEditor();
 
-    tags_array.push(tagInsertInput.value)
-    tagInsertInput.value = "";
-    tagInsertInput.focus();
+    tags_array.push(modalTagElements.tagInsertInput.value)
+    modalTagElements.tagInsertInput.value = "";
+    modalTagElements.tagInsertInput.focus();
 })
 
-function mostrarToast(mensagem) {
+// Toast
+
+function mostrarToast(mensagem, bg_color = "") {
     toast.textContent = mensagem;
     toast.classList.add("show");
+    toast.style.backgroundColor = bg_color;
 
     setTimeout(() => {
         toast.classList.remove("show");
     }, 3000);
 }
+
+// Salvar nota
 
 function criarId() {
     return crypto.randomUUID()
@@ -386,8 +449,8 @@ function criarId() {
 function salvarNota() {
     const nota = {
         id: crypto.randomUUID(),
-        titulo: title.value,
-        conteudo: textArea.value,
+        titulo: editorElements.title.value,
+        conteudo: editorElements.textArea.value,
         favorito: false,
         arquivado: false,
         tags: [...tags_array],
@@ -404,10 +467,25 @@ function salvarNota() {
 
 function atualizarContadorNotas() {
     const notas = JSON.parse(localStorage.getItem("notas")) || [];
-    statisticValueNotes.textContent = notas.length;
+    statisticsElements.statisticValueNotes.textContent = notas.length;
 }
 
-saveBtn.addEventListener("click", () => {
+function limparEditor() {
+    tags_array = [];
+    editorElements.title.value = "";
+    editorElements.textArea.value = "";
+    editorElements.editorTagsContainer.innerHTML = "";
+
+    notesElements.notesContainer.style.display = "flex";
+    notesElements.notesEditor.style.display = "none";
+}
+
+editorElements.saveBtn.addEventListener("click", () => {
+    if (!editorElements.title.value.trim() || !editorElements.textArea.value.trim()) {
+        mostrarToast("Preencha o título e o conteúdo da nota.", "#d41b18");
+        return;
+    }
+
     mostrarToast("Salvando nota...");
 
     salvarNota();
@@ -418,13 +496,10 @@ saveBtn.addEventListener("click", () => {
         mostrarToast("Nota salva com sucesso!");
     }, 2000);
 
-    tags_array = [];
-    title.value = '';
-    textArea.value = '';
-    editorTagsContainer.innerHTML = "";
-    notesContainer.style.display = "flex";
-    notesEditor.style.display = "none";
+    limparEditor();
 })
+
+// Filtrar notas
 
 function filtrarNotas() {
     const notas = JSON.parse(localStorage.getItem("notas")) || [];
@@ -446,15 +521,21 @@ function filtrarNotas() {
     };
 }
 
+// Atualizar placeholders
+
 function atualizarPlaceholders(notas, favoritos, arquivadas) {
-    notePlaceholder.style.display = notas.length ? "none" : "flex";
-    favPlaceholder.style.display = favoritos.length ? "none" : "block";
-    arquivPlaceholder.style.display = arquivadas.length ? "none" : "block";
+    placeholders.notePlaceholder.style.display = notas.length ? "none" : "flex";
+    placeholders.favPlaceholder.style.display = favoritos.length ? "none" : "block";
+    placeholders.arquivPlaceholder.style.display = arquivadas.length ? "none" : "block";
 }
 
+// Atualizar botão de nova nota
+
 function atualizarNewDraft(notas) {
-    newDraft.style.display = notas.length ? "flex" : "none";
+    notesElements.newDraft.style.display = notas.length ? "flex" : "none";
 }
+
+// Atualizar notas
 
 function atualizarNotas() {
     const {
@@ -463,9 +544,9 @@ function atualizarNotas() {
         arquivadas
     } = filtrarNotas();
 
-    renderizarNotas(notasNormais, notesList);
-    renderizarNotas(favoritos, favoriteList);
-    renderizarNotas(arquivadas, archiveList);
+    renderizarNotas(notasNormais, notesElements.notesList);
+    renderizarNotas(favoritos, notesElements.favoriteList);
+    renderizarNotas(arquivadas, notesElements.archiveList);
 
     atualizarPlaceholders(notasNormais, favoritos, arquivadas)
     atualizarNewDraft(notasNormais)
@@ -475,58 +556,66 @@ function atualizarNotas() {
     atualizarContadorArquivados();
 }
 
+// Renderizar notas 
+
+function criarCardNota(nota) {
+    const tags = nota.tags.map(tag => `<span class="tag">${tag}</span>`).join("")
+
+    const card = document.createElement('div')
+    card.className = "notes"
+    card.dataset.id = nota.id;
+
+    card.innerHTML = `
+        <h3 class="card-note-title">${nota.titulo}</h3>
+        <p class="note-content limitado">${nota.conteudo}</p>
+        <div class="note-tags">
+            ${tags}
+        </div>
+
+        <div class="note-footer">
+            <p class="note-date">${new Date(nota.data).toLocaleDateString()}</p>
+            <ul>
+                <li>
+                    <label class="note-action">
+                        <input type="checkbox" class="note-favorite" ${nota.favorito ? "checked" : ""}>
+                        <i class="fa-regular fa-star"></i>
+                    </label>
+                </li>
+
+                <li>
+                    <label class="note-action">
+                        <input type="checkbox" class="note-archive" ${nota.arquivado ? "checked" : ""}>
+                        <i class="fa-solid fa-box-archive"></i>
+                    </label>
+                </li>
+
+                <li>
+                    <button class="note-delete">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </li>
+
+                <li>
+                    <button class="note-edit">
+                        <i class="fa-regular fa-edit"></i>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    `;
+
+    return card;
+}
+
 function renderizarNotas(lista, container) {
     container.innerHTML = "";
 
     lista.forEach((nota) => {
-        const tags = nota.tags.map(tag => `<span class="tag">${tag}</span>`).join("")
-
-        const card = document.createElement('div')
-        card.className = "notes"
-        card.dataset.id = nota.id;
-
-        card.innerHTML = `
-            <h3 class="card-note-title">${nota.titulo}</h3>
-            <p class="note-content limitado">${nota.conteudo}</p>
-            <div class="note-tags">
-                ${tags}
-            </div>
-
-            <div class="note-footer">
-                <p class="note-date">${new Date(nota.data).toLocaleDateString()}</p>
-                <ul>
-                    <li>
-                        <label class="note-action">
-                            <input type="checkbox" class="note-favorite" ${nota.favorito ? "checked" : ""}>
-                            <i class="fa-regular fa-star"></i>
-                        </label>
-                    </li>
-
-                    <li>
-                        <label class="note-action">
-                            <input type="checkbox" class="note-archive" ${nota.arquivado ? "checked" : ""}>
-                            <i class="fa-solid fa-box-archive"></i>
-                        </label>
-                    </li>
-
-                    <li>
-                        <button class="note-delete">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </li>
-
-                    <li>
-                        <button class="note-edit">
-                            <i class="fa-regular fa-edit"></i>
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        `;
-
-        container.appendChild(card);
+        container.appendChild(criarCardNota(nota));
     });
 }
+
+// Inicializar a atualização das notas ao carregar a página
 
 document.addEventListener("DOMContentLoaded", 
     atualizarNotas()
@@ -542,38 +631,58 @@ function excluirNota(id) {
     atualizarNotas();
 }
 
-function  exibirNotasView(id) {
+// Exibir nota na visualização
+
+function buscarNota(id) {
     const notas = JSON.parse(localStorage.getItem("notas")) || [];
+    return notas.find(nota => nota.id === id);
+}
 
-    const nota = notas.find(n => n.id === id);
+function criarTags(tags) {
+    const noteTags = document.createElement("div");
+    noteTags.className = "note-tags";
 
-    if (!nota) return;
+    noteTags.innerHTML = tags
+        .map(tag => `<span class="tag">${tag}</span>`)
+        .join("");
 
-    viewNoteInfo.innerHTML = "";
+    return noteTags;
+}
 
-    const tags = nota.tags.map(tag => `<span class="tag">${tag}</span>`).join("")
-
-    const noteTags = document.createElement('div')
-    noteTags.className = "note-tags"
-
-    noteTags.innerHTML = `
-        ${tags}
-    `
-
+function criarData(data) {
     const noteDate = document.createElement("p");
     noteDate.className = "note-date";
-    noteDate.textContent = new Date(nota.data).toLocaleDateString();
+    noteDate.textContent = new Date(data).toLocaleDateString();
 
-    viewNoteInfo.appendChild(noteTags);
-    viewNoteInfo.appendChild(noteDate);    
+    return noteDate;
+}
 
-    viewNote.innerHTML = `
+function preencherInformacoesNota(nota) {
+    notesElements.viewNoteInfo.innerHTML = "";
+
+    notesElements.viewNoteInfo.appendChild(criarTags(nota.tags));
+    notesElements.viewNoteInfo.appendChild(criarData(nota.data));
+}
+
+function preencherConteudoNota(nota) {
+    notesElements.viewNote.innerHTML = `
         <h1 id="view-note-title" class="note-title">${nota.titulo}</h1>
         <div id="view-note-content" class="note-content">${nota.conteudo}</div>
     `;
 }
 
-[notesList, favoriteList, archiveList].forEach(container => {
+function exibirNotasView(id) {
+    const nota = buscarNota(id);
+
+    if (!nota) return;
+
+    preencherInformacoesNota(nota);
+    preencherConteudoNota(nota);
+}
+
+// Eventos de clique nas listas de notas, favoritos e arquivados
+
+[notesElements.notesList, notesElements.favoriteList, notesElements.archiveList].forEach(container => {
 
     container.addEventListener("click", (event) => {
 
@@ -594,11 +703,11 @@ function  exibirNotasView(id) {
         if (titulo) {
             const id = titulo.closest(".notes").dataset.id;
 
-            notesContainer.style.display = "none";
-            notesContFavorite.style.display = "none";
-            notasContArchive.style.display = "none";
+            notesElements.notesContainer.style.display = "none";
+            notesElements.notesContFavorite.style.display = "none";
+            notesElements.notasContArchive.style.display = "none";
 
-            viewNoteContainer.style.display = "flex";
+            notesElements.viewNoteContainer.style.display = "flex";
 
             exibirNotasView(id);
         }
@@ -607,12 +716,14 @@ function  exibirNotasView(id) {
 
 });
 
+// Atualizar contador de favoritos e arquivados
+
 function atualizarContadorFavoritos() {
     const notas = JSON.parse(localStorage.getItem("notas")) || [];
 
     const totalFavoritas = notas.filter(nota => nota.favorito).length;
 
-    statisticValueFavorito.textContent = totalFavoritas;
+    statisticsElements.statisticValueFavorito.textContent = totalFavoritas;
 }
 
 function atualizarContadorArquivados() {
@@ -620,10 +731,12 @@ function atualizarContadorArquivados() {
 
     const totalArquivados = notas.filter(nota => nota.arquivado).length
 
-    statisticValueArchive.textContent = totalArquivados
+    statisticsElements.statisticValueArchive.textContent = totalArquivados
 }
 
-[notesList, favoriteList, archiveList].forEach(container => {
+// Atualizar favoritos e arquivados ao marcar/desmarcar
+
+[notesElements.notesList, notesElements.favoriteList, notesElements.archiveList].forEach(container => {
 
     container.addEventListener("change", (event) => {
 
