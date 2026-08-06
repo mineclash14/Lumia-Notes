@@ -72,10 +72,11 @@
                     </label>
 
                     <div class="search-container">
-                        <input type="text" placeholder="Pesquisar..." id="search">
+                        <input type="text" placeholder="Pesquisar..." class="search">
 
                         <div class="search-mobile-container">
-                            <button class="search-mobile"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button class="search-mobile-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <input type="text" placeholder="Pesquisar..." class="search search-mobile-input">
                         </div>
                     </div>
                 </div>
@@ -149,8 +150,8 @@
                         <!--LISTA DAS NOTAS-->
                         <div id="notes-list" class="lists-notes"></div>
 
-                        <div id="placeholder-note">
-                            <h2 class="placeholders">Você ainda não tem nenhuma nota</h2>
+                        <div class="placeholder-note-container">
+                            <h2 class="placeholders"></h2>
                             <button class="new-note main-new-note" aria-label="Nova nota">
                                 <i class="fa-solid fa-plus"></i>
                             </button>
@@ -193,7 +194,7 @@
                         <!--LISTA DAS NOTAS FAVORITAS-->
                         <div id="notes-list-favorite" class="lists-notes"></div>
 
-                        <h2 id="placeholder-favorite" class="placeholders">Você ainda não tem nenhuma nota favorita</h2>
+                        <h2 id="placeholder-favorite" class="placeholders"></h2>
                     </div>
 
                 </section>
@@ -224,7 +225,7 @@
                         <!--LISTA DAS NOTAS ARQUIVADAS-->
                         <div id="notes-list-archive" class="lists-notes"></div>
 
-                        <h2 id="placeholder-archive" class="placeholders">Você ainda não tem nenhuma nota arquivada</h2>
+                        <h2 id="placeholder-archive" class="placeholders"></h2>
                     </div>
 
                 </section>

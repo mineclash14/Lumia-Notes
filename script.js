@@ -11,6 +11,14 @@ const sidebarElements = {
     sidebarArquivBtn: document.getElementById("archive-tab"),
 }
 
+// Search 
+
+const searchElements = {
+    searchInput: document.querySelectorAll(".search"),
+    searchMobileInput: document.querySelector(".search-mobile-input"),
+    searchMobileBtn: document.querySelector(".search-mobile-btn")
+}
+
 // Show sidebar
 
 const showSidebarElements = {
@@ -52,7 +60,8 @@ const notesElements = {
 // Placeholders
 
 const placeholders = {
-    notePlaceholder: document.getElementById("placeholder-note"),
+    notePlaceholderContainer: document.querySelector(".placeholder-note-container"),
+    notePlaceholder: document.querySelector(".placeholder-note-container h2"),
     arquivPlaceholder: document.getElementById("placeholder-archive"),
     favPlaceholder: document.getElementById("placeholder-favorite")
 }
@@ -91,7 +100,6 @@ const toolbarElements = {
     tagBtn: document.getElementById("tag-btn")
 }
 
-
 // Modal de imagem
 
 const modalImageElements = {
@@ -117,7 +125,6 @@ const statisticsElements = {
     statisticValueFavorito: document.getElementById("statistic-value-favorito"),
     statisticValueArchive: document.getElementById("statistic-value-archive")
 }
-
 
 // Mostrar e ocultar sidebar no mobile e tablet
 
@@ -524,9 +531,13 @@ function filtrarNotas() {
 // Atualizar placeholders
 
 function atualizarPlaceholders(notas, favoritos, arquivadas) {
-    placeholders.notePlaceholder.style.display = notas.length ? "none" : "flex";
+    placeholders.notePlaceholderContainer.style.display = notas.length ? "none" : "flex";
     placeholders.favPlaceholder.style.display = favoritos.length ? "none" : "block";
     placeholders.arquivPlaceholder.style.display = arquivadas.length ? "none" : "block";
+
+    placeholders.notePlaceholder.textContent = "Você ainda não tem nenhuma nota";
+    placeholders.favPlaceholder.textContent = "Você ainda não tem nenhuma nota favorita";
+    placeholders.arquivPlaceholder.textContent = "Você ainda não tem nenhuma nota arquivada";
 }
 
 // Atualizar botão de nova nota
@@ -771,3 +782,46 @@ function atualizarContadorArquivados() {
     });
 
 });
+
+// Atualizar notas ao digitar na barra de pesquisa
+
+function filtrarNotasPorPesquisa(pesquisa) {
+    const notas = JSON.parse(localStorage.getItem("notas")) || [];
+    return notas.filter(nota => 
+        nota.titulo.toLowerCase().includes(pesquisa)
+    );
+}
+
+function atualizarPlaceholdersPesquisa(notasFiltradas) {
+    const favoritos = notasFiltradas.filter(nota => nota.favorito && !nota.arquivado);
+    const arquivadas = notasFiltradas.filter(nota => nota.arquivado);
+
+    placeholders.notePlaceholder.style.display = notasFiltradas.length ? "none" : "flex";
+    placeholders.favPlaceholder.style.display = favoritos.length ? "none" : "flex";
+    placeholders.arquivPlaceholder.style.display = arquivadas.length ? "none" : "flex";
+
+    placeholders.notePlaceholder.textContent = "Nenhuma nota com esse título foi encontrada.";
+
+    placeholders.favPlaceholder.textContent = "Nenhuma nota favorita com esse título foi encontrada.";
+
+    placeholders.arquivPlaceholder.textContent = "Nenhuma nota arquivada com esse título foi encontrada.";
+}
+
+searchElements.searchInput.forEach(input => {
+    input.addEventListener("input", () => {
+        const pesquisa = input.value.trim().toLowerCase();
+        const notasFiltradas = filtrarNotasPorPesquisa(pesquisa);
+
+        if (pesquisa === "") {
+            atualizarNotas();
+            atualizarPlaceholders();
+            return;
+        }
+
+        renderizarNotas(notasFiltradas, notesElements.notesList);
+        renderizarNotas(notasFiltradas.filter(nota => nota.favorito && !nota.arquivado), notesElements.favoriteList);
+        renderizarNotas(notasFiltradas.filter(nota => nota.arquivado), notesElements.archiveList);
+
+        atualizarPlaceholdersPesquisa(notasFiltradas);
+    })
+})
