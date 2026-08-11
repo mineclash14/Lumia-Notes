@@ -1,0 +1,56 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Lumia Notes</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/register.css' %}">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+    <div class="register-container">
+        <div class="popup" id="popup"></div>
+
+        <div class="register-header">
+            <img src="{% static 'accounts/images/logo.png' %}" alt="Lumia Notes Logo">
+            <h1>Register</h1>
+            <p>Create an account to access your notes.</p>
+        </div>
+
+        <form method="POST" action="{% url 'register' %}" id="register-form">
+            {% csrf_token %}
+
+            <div class="username-container camp-container">
+                <input type="text" id="username" name="username" placeholder="Username" value="{{ username|default:'' }}" minlength="4" required>
+                <i class="fa-solid fa-xmark"></i>
+                <i class="fa-solid fa-check"></i>
+            </div>
+
+            <input type="email" id="email" name="email" placeholder="Email" value="{{ email|default:'' }}" required>
+
+            <div class="password-container camp-container">
+                <input type="password" id="password" name="password" placeholder="Password" minlength="8" required>
+                <i class="fa-solid fa-eye showEye"></i>
+            </div>
+
+            <div class="password-container camp-container">
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" minlength="8" required>
+                <i class="fa-solid fa-eye showEye"></i>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+    </div>
+
+    <script src="{% static 'accounts/js/script.js' %}"></script>
+
+    {% if error %}
+        <script>
+            mostrarPopup("{{ error|escapejs }}");
+        </script>
+    {% endif %}
+</body>
+</html>

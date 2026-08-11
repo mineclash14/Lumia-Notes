@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Lumia Notes</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
+    <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <img src="{% static 'accounts/images/logo.png' %}" alt="Lumia Notes Logo">
+            <h1>Login</h1>
+            <p>Welcome back! To access your notes, please enter your credentials.</p>
+        </div>
+        <form method="POST" action="{% url 'login' %}" id="login-form">
+            {% csrf_token %}
+            <input type="text" id="username" name="username" placeholder="Username" required>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+    </div>
+</body>
+</html>
