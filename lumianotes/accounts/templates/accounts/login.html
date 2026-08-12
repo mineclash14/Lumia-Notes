@@ -11,18 +11,41 @@
 </head>
 <body>
     <div class="login-container">
+        <div class="popup" id="popup"></div>
+
         <div class="login-header">
             <img src="{% static 'accounts/images/logo.png' %}" alt="Lumia Notes Logo">
             <h1>Login</h1>
             <p>Welcome back! To access your notes, please enter your credentials.</p>
         </div>
+
         <form method="POST" action="{% url 'login' %}" id="login-form">
             {% csrf_token %}
             <input type="text" id="username" name="username" placeholder="Username" required>
-            <input type="password" id="password" name="password" placeholder="Password" required>
+            
+            <div class="password-container">
+                <input type="password" id="password" name="password" placeholder="Password" minlength="8" required>
+                <i class="fa-solid fa-eye showEye"></i>
+            </div>
+
             <button type="submit">Login</button>
         </form>
         <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
     </div>
+
+    <script src="{% static 'accounts/js/login.js' %}"></script>
+
+    {% if error %}
+        <script>
+            mostrarPopup("{{ error|escapejs }}", "error");
+        </script>
+    {% endif %}
+
+    {% if success %}
+        <script>
+            mostrarPopup("{{ success|escapejs }}", "success");
+        </script>
+    {% endif %}
+    
 </body>
 </html>

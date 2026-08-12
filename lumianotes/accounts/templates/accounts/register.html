@@ -45,11 +45,17 @@
         <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
     </div>
 
-    <script src="{% static 'accounts/js/script.js' %}"></script>
+    <script src="{% static 'accounts/js/register.js' %}"></script>
 
     {% if error %}
         <script>
-            mostrarPopup("{{ error|escapejs }}");
+            mostrarPopup("{{ error|escapejs }}", "error");
+        </script>
+    {% endif %}
+
+    {% if success %}
+        <script>
+            mostrarPopup("{{ success|escapejs }}", "success");
         </script>
     {% endif %}
 </body>

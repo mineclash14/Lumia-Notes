@@ -8,7 +8,13 @@ const usernameContainer = document.querySelector(".username-container");
 const usernameCheckIcon = usernameContainer?.querySelector(".fa-check");
 const usernameErrorIcon = usernameContainer?.querySelector(".fa-xmark");
 
-function mostrarPopup(message) {
+function mostrarPopup(message, type) {
+    if (type == "success") {
+        popup.style.backgroundColor = "#2ecc71"
+    } else {
+        popup.style.backgroundColor = ""
+    }
+
     popup.textContent = message
     popup.classList.add("show")
 
