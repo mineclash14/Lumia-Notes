@@ -103,6 +103,127 @@ input[type="checkbox"] {
   visibility: visible;
 }
 
+/*WARNING*/
+
+.warning-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  z-index: 10005;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100vw;
+  height: 100vh;
+
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .3s ease;
+}
+
+.warning-container.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .3s ease;
+}
+
+.warning {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  
+  width: min(520px, calc(100vw - 40px));
+  padding: 32px;
+
+  background: var(--background-color);
+  border: 1px solid var(--border-color-transparent);
+  border-radius: 16px;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.warning h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  margin: 0;
+
+  font-size: 22px;
+  text-align: center;
+}
+
+.warning h1 i {
+  font-size: 20px;
+}
+
+.warning p {
+  margin: 0;
+
+  max-width: 450px;
+
+  color: var(--light-grey);
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.warning div {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.link-login,
+.ok-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 120px;
+  padding: 10px 22px;
+
+  color: var(--white);
+
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+
+  transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
+}
+
+.link-login {
+  background-color: var(--light-blue);
+}
+
+.ok-btn {
+  background-color: var(--success);
+}
+
+.link-login:hover {
+  background-color: var(--white);
+  color: var(--light-blue);
+  transform: translateY(-2px);
+}
+
+.ok-btn:hover {
+  background-color: var(--white);
+  color: var(--success);
+  transform: translateY(-2px);
+}
+
 /*SIDEBAR*/
 
 .sidebar {

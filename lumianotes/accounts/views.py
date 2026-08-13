@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
+from django.contrib import messages
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 def login_view(request):
 
@@ -46,6 +47,8 @@ def register_view(request):
         user = User.objects.create_user(username=username, email=email, password=password)
         user.save()
 
-        return render(request, 'accounts/login.html', {'success': 'User created successfully!'})
+        messages.success(request, 'User created successfully!')
+
+        return redirect('login')
 
     return render(request, 'accounts/register.html')

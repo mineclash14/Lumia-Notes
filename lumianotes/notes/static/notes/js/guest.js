@@ -2,6 +2,11 @@
 
 const toast = document.querySelector(".toast");
 
+// Warning 
+
+const warningContainer = document.querySelector(".warning-container")
+const okButton = document.querySelector(".ok-btn")
+
 // Sidebar
 
 const sidebarElements = {
@@ -30,8 +35,8 @@ const showSidebarElements = {
 
 // Configuração
 
-const perfilconfigbtn = document.getElementById("perfil-config-btn");
-const perfilconfig = document.getElementById("perfil-config");
+// const perfilconfigbtn = document.getElementById("perfil-config-btn");
+// const perfilconfig = document.getElementById("perfil-config");
 
 // Visualização das notas
 
@@ -126,6 +131,12 @@ const statisticsElements = {
     statisticValueArchive: document.getElementById("statistic-value-archive")
 }
 
+// Manipulação do warning
+
+okButton.addEventListener("click", () => {
+    warningContainer.classList.add("hidden");
+});
+
 // Mostrar e ocultar sidebar no mobile e tablet
 
 showSidebarElements.showSidebarMobileBtn.addEventListener("change", (event) => {
@@ -173,9 +184,9 @@ sidebarElements.sidebarArquivBtn.addEventListener("click", () => {
 
 // Configuração do perfil
 
-perfilconfigbtn.addEventListener("change", (event) => {
-    perfilconfig.setAttribute("class", event.target.checked ? "ativo" : "")
-});
+// perfilconfigbtn.addEventListener("change", (event) => {
+//     perfilconfig.setAttribute("class", event.target.checked ? "ativo" : "")
+// });
 
 // Mostrar visualização em grid ou lista
 

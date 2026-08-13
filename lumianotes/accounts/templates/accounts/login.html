@@ -41,10 +41,12 @@
         </script>
     {% endif %}
 
-    {% if success %}
-        <script>
-            mostrarPopup("{{ success|escapejs }}", "success");
-        </script>
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+                mostrarPopup("{{ message|escapejs }}", "success");
+            </script>
+        {% endfor %}
     {% endif %}
     
 </body>

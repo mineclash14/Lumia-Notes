@@ -5,3 +5,6 @@ from django.shortcuts import render
 @login_required
 def home(request):
     return render(request, "notes/home.html")
+
+def guest(request):
+    return render(request, "notes/guest.html")
