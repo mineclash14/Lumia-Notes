@@ -114,7 +114,11 @@
                                         <i class="fa-solid fa-gear"></i> Configurações
                                     </button>
                                 </li>
-                                <li><button id="sair"><i class="fa-solid fa-right-from-bracket"></i> Sair</button></li>
+                                <li>
+                                    <a href="{% url 'logout' %}" id="sair">
+                                        <i class="fa-solid fa-right-from-bracket"></i> Sair
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </ul>
@@ -405,6 +409,6 @@
         </div>
     </div>
 
-    <script src="{% static 'notes/js/script.js' %}"></script>
+    <script src="{% static 'notes/js/index.js' %}"></script>
 </body>
 </html>

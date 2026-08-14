@@ -1,20 +1,28 @@
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
+
 def login_view(request):
 
     if request.method == 'POST':
 
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = User.objects.filter(username=username).first()
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
 
-        if user and user.check_password(password):
-            return render(request, 'notes/home.html', {'success': 'Login successful!'})
-        else:
-            return render(request, 'accounts/login.html', {'error': 'Invalid username or password.'})
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+
+        return render(request, 'accounts/login.html', {'error': 'Usuário ou senha inválidos.'})
 
     return render(request, 'accounts/login.html')
 

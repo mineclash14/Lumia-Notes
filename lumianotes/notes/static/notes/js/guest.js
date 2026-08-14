@@ -33,11 +33,6 @@ const showSidebarElements = {
     showSidebarTabletBtn: document.getElementById("show-sidebar-tablet-btn")
 }
 
-// Configuração
-
-// const perfilconfigbtn = document.getElementById("perfil-config-btn");
-// const perfilconfig = document.getElementById("perfil-config");
-
 // Visualização das notas
 
 const notesElements = {
@@ -181,12 +176,6 @@ sidebarElements.sidebarFavBtn.addEventListener("click", () => {
 sidebarElements.sidebarArquivBtn.addEventListener("click", () => {
     mostrarTela(notesElements.notasContArchive);
 });
-
-// Configuração do perfil
-
-// perfilconfigbtn.addEventListener("change", (event) => {
-//     perfilconfig.setAttribute("class", event.target.checked ? "ativo" : "")
-// });
 
 // Mostrar visualização em grid ou lista
 
@@ -413,16 +402,23 @@ function mostrarTagEditor() {
     const tag = document.createElement("div");
     tag.className = "editor-note-tag";
 
-    tag.innerHTML = `
-        ${modalTagElements.tagInsertInput.value}
-        <button class="remove-editor-tag">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-    `;
+    const tagText = document.createElement("span");
+    tagText.textContent = modalTagElements.tagInsertInput.value;
 
-    tag.querySelector("button").addEventListener("click", () => {
+    const removeButton = document.createElement("button");
+    removeButton.className = "remove-editor-tag";
+
+    const icon = document.createElement("i");
+    icon.className = "fa-solid fa-xmark";
+
+    removeButton.appendChild(icon);
+
+    removeButton.addEventListener("click", () => {
         tag.remove();
     });
+
+    tag.appendChild(tagText);
+    tag.appendChild(removeButton);
 
     editorElements.editorTagsContainer.appendChild(tag);
 }
@@ -581,50 +577,71 @@ function atualizarNotas() {
 // Renderizar notas 
 
 function criarCardNota(nota) {
-    const tags = nota.tags.map(tag => `<span class="tag">${tag}</span>`).join("")
-
     const card = document.createElement('div')
     card.className = "notes"
     card.dataset.id = nota.id;
 
-    card.innerHTML = `
-        <h3 class="card-note-title">${nota.titulo}</h3>
-        <p class="note-content limitado">${nota.conteudo}</p>
-        <div class="note-tags">
-            ${tags}
-        </div>
+    const title = document.createElement("h3")
+    title.className = "card-note-title";
+    title.textContent = nota.titulo;
 
-        <div class="note-footer">
-            <p class="note-date">${new Date(nota.data).toLocaleDateString()}</p>
-            <ul>
-                <li>
-                    <label class="note-action">
-                        <input type="checkbox" class="note-favorite" ${nota.favorito ? "checked" : ""}>
-                        <i class="fa-regular fa-star"></i>
-                    </label>
-                </li>
+    const content = document.createElement("p")
+    content.className = "note-content limitado";
+    content.textContent = nota.conteudo
 
-                <li>
-                    <label class="note-action">
-                        <input type="checkbox" class="note-archive" ${nota.arquivado ? "checked" : ""}>
-                        <i class="fa-solid fa-box-archive"></i>
-                    </label>
-                </li>
+    const noteTags = document.createElement("div");
+    noteTags.className = "note-tags";
 
-                <li>
-                    <button class="note-delete">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </li>
+    nota.tags.forEach(tag => {
+        const tagElement = document.createElement("span");
+        tagElement.className = "tag";
+        tagElement.textContent = tag;
 
-                <li>
-                    <button class="note-edit">
-                        <i class="fa-regular fa-edit"></i>
-                    </button>
-                </li>
-            </ul>
-        </div>
+        noteTags.appendChild(tagElement)
+    })
+
+    card.appendChild(title);
+    card.appendChild(content);
+    card.appendChild(noteTags);
+
+    const noteFooter = document.createElement("div");
+    noteFooter.className = "note-footer";
+
+    noteFooter.innerHTML = `
+        <p class="note-date">
+            ${new Date(nota.data).toLocaleDateString()}
+        </p>
+
+        <ul>
+            <li>
+                <label class="note-action">
+                    <input type="checkbox" class="note-favorite" ${nota.favorito ? "checked" : ""}>
+                    <i class="fa-regular fa-star"></i>
+                </label>
+            </li>
+
+            <li>
+                <label class="note-action">
+                    <input type="checkbox" class="note-archive" ${nota.arquivado ? "checked" : ""}>
+                    <i class="fa-solid fa-box-archive"></i>
+                </label>
+            </li>
+
+            <li>
+                <button class="note-delete">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </li>
+
+            <li>
+                <button class="note-edit">
+                    <i class="fa-regular fa-edit"></i>
+                </button>
+            </li>
+        </ul>
     `;
+
+    card.appendChild(noteFooter)
 
     return card;
 }
@@ -664,9 +681,14 @@ function criarTags(tags) {
     const noteTags = document.createElement("div");
     noteTags.className = "note-tags";
 
-    noteTags.innerHTML = tags
-        .map(tag => `<span class="tag">${tag}</span>`)
-        .join("");
+    tags.forEach(tag => {
+        const tagElement = document.createElement("span");
+
+        tagElement.className = "tag";
+        tagElement.textContent = tag;
+
+        noteTags.appendChild(tagElement);
+    });
 
     return noteTags;
 }
@@ -687,10 +709,22 @@ function preencherInformacoesNota(nota) {
 }
 
 function preencherConteudoNota(nota) {
-    notesElements.viewNote.innerHTML = `
-        <h1 id="view-note-title" class="note-title">${nota.titulo}</h1>
-        <div id="view-note-content" class="note-content">${nota.conteudo}</div>
-    `;
+    const viewNoteTitle = document.createElement("h1");
+
+    viewNoteTitle.id = "view-note-title";
+    viewNoteTitle.className = "note-title";
+    viewNoteTitle.textContent = nota.titulo;
+
+    const viewNoteContent = document.createElement("div");
+
+    viewNoteContent.id = "view-note-content";
+    viewNoteContent.className = "note-content";
+    viewNoteContent.textContent = nota.conteudo;
+
+    notesElements.viewNote.innerHTML = "";
+
+    notesElements.viewNote.appendChild(viewNoteTitle);
+    notesElements.viewNote.appendChild(viewNoteContent);
 }
 
 function exibirNotasView(id) {
