@@ -5,15 +5,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Notes</title>
     <link rel="stylesheet" media="screen and (max-width: 766px)" href="{% static 'notes/css/mobile.css' %}">
     <link rel="stylesheet" media="screen and (min-width: 1024px)" href="{% static 'notes/css/desktop.css' %}">
     <link rel="stylesheet" media="screen and (min-width: 767px) and (max-width: 1023px)" href="{% static 'notes/css/tablet.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'notes/images/favicon.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'notes/images/favicon.png' %}">
     <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 <body>
     <div class="app-container">
         <div class="toast"></div>
+        <div id="folder-modal" class="folder-modal" hidden>
+            <div class="folder-modal-backdrop" data-close-folder-modal></div>
+
+            <section class="folder-modal-card" role="dialog" aria-modal="true" aria-labelledby="folder-modal-title">
+                <div class="folder-modal-header">
+                    <div class="folder-modal-icon">
+                        <i class="fa-regular fa-folder"></i>
+                    </div>
+
+                    <button type="button" class="folder-modal-close" data-close-folder-modal aria-label="Fechar">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <h2 id="folder-modal-title">Nova pasta</h2>
+                <p id="folder-modal-description">
+                    Organize suas notas em uma pasta.
+                </p>
+
+                <form id="folder-modal-form">
+                    <label for="folder-name-input">Nome da pasta</label>
+
+                    <input
+                        id="folder-name-input"
+                        name="nome"
+                        type="text"
+                        maxlength="100"
+                        placeholder="Ex.: Projetos pessoais"
+                        autocomplete="off"
+                        required
+                    >
+
+                    <p id="folder-modal-error" role="alert" hidden></p>
+
+                    <div class="folder-modal-actions">
+                        <button
+                            type="button"
+                            class="folder-modal-cancel"
+                            data-close-folder-modal
+                        >
+                            Cancelar
+                        </button>
+
+                        <button type="submit" class="folder-modal-submit">
+                            Criar pasta
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </div>
 
         <!--SIDEBAR-->
         <aside class="sidebar">
@@ -40,7 +92,10 @@
 
                 <!--CONTAINER DAS PASTAS-->
                 <div id="folders-container">
-                    <button id="add-folder" aria-label="Adicionar pastas">PASTAS <i class="fa-solid fa-plus"></i></button>
+                    <div class="folders-header">
+                        <button id="add-folder" aria-label="Adicionar pastas">PASTAS <i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div id="folders-list"></div>
                 </div>
 
             </div>

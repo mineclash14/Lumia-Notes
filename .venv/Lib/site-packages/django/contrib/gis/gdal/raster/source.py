@@ -34,8 +34,8 @@ from django.utils.functional import cached_property
 
 class DisallowedRasterLookup(SuspiciousOperation):
     """
-    Types that force GDALRaster to open in write mode (dict) or values that
-    could be virtual filesystem paths (str) are not allowed in lookup contexts.
+    Types that force GDALRaster to open in write mode or values that could
+    reference external sources, are not allowed in lookup contexts.
     Instead, wrap values in GDALRaster explicitly.
     """
 
@@ -217,7 +217,7 @@ class GDALRaster(GDALRasterBase):
             )
 
     def __del__(self):
-        if self.is_vsi_based:
+        if self._is_vsimem_based:
             # Remove the temporary file from the VSI in-memory filesystem.
             capi.unlink_vsi_file(force_bytes(self.name))
         super().__del__()
@@ -249,12 +249,19 @@ class GDALRaster(GDALRasterBase):
         """
         Raise DisallowedRasterLookup for values inappropriate in lookups:
         - No dicts, which GDALRaster(write=False) might still write to.
-        - No strings or Paths, which might fetch over the virtual filesystem.
+        - No strings, bytes, or Paths, which might fetch over the virtual
+          filesystem.
         """
         normalized = cls._preprocess_input(ds_input)
-        if isinstance(normalized, (dict, str)):
+        if isinstance(normalized, (dict, str, bytes)):
+            value_repr = repr(normalized)
+            if len(value_repr) > 4096:
+                value_repr = "%s… <trimmed %d bytes string>" % (
+                    value_repr[:4096],
+                    len(value_repr),
+                )
             msg = (
-                f"Cannot use object {normalized!r} for a spatial lookup "
+                f"Cannot use object {value_repr} for a spatial lookup "
                 "parameter. If this is a raster, wrap it with GDALRaster() "
                 "before using it in a lookup to enable writing or fetching."
             )
@@ -276,9 +283,7 @@ class GDALRaster(GDALRasterBase):
 
     @property
     def vsi_buffer(self):
-        if not (
-            self.is_vsi_based and self.name.startswith(VSI_MEM_FILESYSTEM_BASE_PATH)
-        ):
+        if not self._is_vsimem_based:
             return None
         # Prepare an integer that will contain the buffer length.
         out_length = c_int()
@@ -294,6 +299,10 @@ class GDALRaster(GDALRasterBase):
     @cached_property
     def is_vsi_based(self):
         return self._ptr and self.name.startswith(VSI_FILESYSTEM_PREFIX)
+
+    @cached_property
+    def _is_vsimem_based(self):
+        return self._ptr and self.name.startswith(VSI_MEM_FILESYSTEM_BASE_PATH)
 
     @property
     def name(self):

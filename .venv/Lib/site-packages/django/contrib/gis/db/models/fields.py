@@ -221,11 +221,15 @@ class BaseSpatialField(Field):
                 try:
                     obj = GEOSGeometry(obj, max_geom_collections=max_geom_collections)
                 except (TypeError, ValueError) as err:
-                    if isinstance(obj, str) and obj.startswith(VSI_FILESYSTEM_PREFIX):
+                    if isinstance(obj, bytes) or (
+                        isinstance(obj, str) and obj.startswith(VSI_FILESYSTEM_PREFIX)
+                    ):
                         raise blocked_err
                     raise err
                 except (GEOSException, GDALException):
-                    if isinstance(obj, str) and json_regex.match(obj):
+                    if isinstance(obj, bytes) or (
+                        isinstance(obj, str) and json_regex.match(obj)
+                    ):
                         raise blocked_err
                     raise ValueError(
                         "Couldn't create spatial object from lookup value '%s'." % obj
@@ -284,8 +288,8 @@ class GeometryField(BaseSpatialField):
          entry in the `USER_SDO_GEOM_METADATA` table. Defaults to 0.05.
 
         max_geom_collections:
-         The maximum number of geometry collections accepted before parsing is
-         refused, forwarded to the form field.
+         The maximum geometry collection nesting depth accepted before parsing
+         is refused, forwarded to the form field.
         """
         # Setting the dimension of the geometry field.
         self.dim = dim
@@ -298,8 +302,8 @@ class GeometryField(BaseSpatialField):
         self._extent = extent
         self._tolerance = tolerance
 
-        # Limit on nested/total geometry collections, forwarded to the form
-        # field to guard against crashes in GEOS from deeply nested input.
+        # Limit on nested geometry collections, forwarded to the form field to
+        # guard against crashes in GEOS from deeply nested input.
         self.max_geom_collections = max_geom_collections
 
         super().__init__(verbose_name=verbose_name, **kwargs)

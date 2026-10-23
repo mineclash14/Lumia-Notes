@@ -128,6 +128,29 @@ const statisticsElements = {
     statisticValueArchive: document.getElementById("statistic-value-archive")
 }
 
+// Folders
+
+const folderModalFormElement = document.getElementById("folder-modal-form");
+
+const foldersElements = {
+    foldersList: document.getElementById("folders-list"),
+    addFolderBtn: document.getElementById("add-folder"),
+    folderModal: document.getElementById("folder-modal"),
+    folderModalForm: folderModalFormElement,
+    folderModalTitle: document.getElementById("folder-modal-title"),
+    folderModalDescription: document.getElementById("folder-modal-description"),
+    folderModalInput: document.getElementById("folder-name-input"),
+    folderModalError: document.getElementById("folder-modal-error"),
+    folderModalSubmit: folderModalFormElement.querySelector(".folder-modal-submit"),
+    folderModalLabel: folderModalFormElement.querySelector("label"),
+    folderModalAcoesFechar: folderModalFormElement.querySelector(".folder-modal-extra-actions")
+}
+
+let pastaSelecionada = null;
+let pastaEmEdicao = null;
+let modoModalPasta = "criar";
+let pastaParaExcluir = null;
+
 // Mostrar e ocultar sidebar no mobile e tablet
 
 showSidebarElements.showSidebarMobileBtn.addEventListener("change", (event) => {
@@ -161,7 +184,8 @@ function mostrarTela(tela) {
     tela.style.display = "flex";
 }
 
-sidebarElements.sidebarNotesBtn.addEventListener("click", () => {
+sidebarElements.sidebarNotesBtn.addEventListener("click", async () => {
+    await mostrarTodasAsNotas();
     mostrarTela(notesElements.notesContainer);
 });
 
@@ -519,6 +543,7 @@ async function salvarNota() {
     dados.append("titulo", editorElements.title.value);
     dados.append("conteudo", editorElements.textArea.value);
     dados.append("tags", JSON.stringify(tags_array));
+    dados.append("pasta_id", pastaSelecionada ?? "");
 
     const response = await fetch("/notes/api/notas/", {
         method: "POST",
@@ -697,6 +722,11 @@ function criarCardNota(nota) {
 
         <ul>
             <li>
+                <button type="button" class="note-move" title="Mover para pasta" data-pasta-id="${nota.pasta_id || ''}">
+                    <i class="fa-regular fa-folder-open"></i>
+                </button>
+            </li>
+            <li>
                 <label class="note-action">
                     <input type="checkbox" class="note-favorite" ${nota.favorito ? "checked" : ""}>
                     <i class="fa-regular fa-star"></i>
@@ -730,9 +760,18 @@ function criarCardNota(nota) {
 }
 
 function renderizarNotas(lista, container) {
-    container.innerHTML = "";
+    if (!container) return;
 
-    lista.forEach((nota) => {
+    const notasFiltradas = lista.filter(nota => {
+        return (
+            pastaSelecionada === null ||
+            nota.pasta_id === Number(pastaSelecionada)
+        );
+    });
+
+    container.replaceChildren();
+
+    notasFiltradas.forEach(nota => {
         container.appendChild(criarCardNota(nota));
     });
 }
@@ -740,7 +779,13 @@ function renderizarNotas(lista, container) {
 // Inicializar a atualização das notas ao carregar a página
 
 document.addEventListener("DOMContentLoaded", async () => {
-    await atualizarNotas();
+    try {
+        await renderizarPastas();
+        await atualizarNotas();
+    } catch (error) {
+        console.error(error);
+        mostrarToast("Erro ao carregar os dados.", "#d41b18");
+    }
 });
 
 async function excluirNota(id) {
@@ -877,6 +922,18 @@ async function exibirNotasView(id) {
             notesElements.viewNoteContainer.style.display = "flex";
 
             exibirNotasView(id);
+        }
+
+        // Mover nota para uma pasta
+        const moveBtn = event.target.closest(".note-move");
+
+        if (moveBtn) {
+            const card = moveBtn.closest(".notes");
+            const id = card.dataset.id;
+            const pastaIdAtual = moveBtn.dataset.pastaId;
+
+            abrirSeletorPasta(id, pastaIdAtual, moveBtn);
+            return;
         }
 
     });
@@ -1031,3 +1088,422 @@ searchElements.searchInput.forEach(input => {
     });
 
 });
+
+async function buscarPastas() {
+    const response = await fetch("/notes/api/pastas/");
+
+    if (!response.ok) {
+        throw new Error("Não foi possível carregar as pastas.");
+    }
+
+    return response.json();
+}
+
+async function criarPasta(nome) {
+    const dados = new URLSearchParams();
+    dados.append("nome", nome);
+
+    const response = await fetch("/notes/api/pastas/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: dados,
+    });
+
+    const resultado = await response.json();
+
+    if (!response.ok) {
+        throw new Error(resultado.erro || "Erro ao criar pasta.");
+    }
+
+    return resultado;
+}
+
+async function atualizarPasta(id, dados) {
+    const response = await fetch(`/notes/api/pastas/${id}/`, {
+        method: "PATCH",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dados),
+    });
+
+    const resultado = await response.json();
+
+    if (!response.ok) {
+        throw new Error(resultado.erro || "Erro ao renomear pasta.");
+    }
+
+    return resultado;
+}
+
+async function excluirPasta(id) {
+    const response = await fetch(`/notes/api/pastas/${id}/`, {
+        method: "DELETE",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error("Não foi possível excluir a pasta.");
+    }
+
+    return response.json();
+}
+
+async function moverNotaParaPasta(notaId, pastaId) {
+    try {
+        await atualizarNota(notaId, {
+            pasta_id: pastaId
+        });
+
+        await renderizarPastas();
+        await atualizarNotas();
+
+        mostrarToast(pastaId ? "Nota movida para a pasta com sucesso!" : "Nota removida da pasta com sucesso!");
+    } catch (error) {
+        console.error(error);
+
+        mostrarToast(
+            "Não foi possível mover a nota.",
+            "#d41b18"
+        );
+    }
+}
+
+function abrirModalPasta(modo, pasta = null) {
+    modoModalPasta = modo;
+    pastaEmEdicao = pasta;
+    pastaParaExcluir = modo === "excluir" ? pasta : null;
+
+    foldersElements.folderModalError.hidden = true;
+    foldersElements.folderModalError.textContent = "";
+
+    foldersElements.folderModalInput.hidden = false;
+    foldersElements.folderModalInput.style.display = "";
+    foldersElements.folderModalLabel.hidden = false;
+    foldersElements.folderModalLabel.style.display = "";
+    foldersElements.folderModalInput.required = true;
+
+    foldersElements.folderModalSubmit.hidden = false;
+    foldersElements.folderModalSubmit.style.display = "";
+    foldersElements.folderModalForm.querySelector(".folder-modal-cancel").textContent = "Cancelar";
+
+    modoCriar(modo);
+    modoRenomear(modo, pasta);
+    modoExcluir(modo, pasta);
+
+    foldersElements.folderModal.hidden = false;
+    document.body.style.overflow = "hidden";
+
+    if (modo !== "excluir") {
+        requestAnimationFrame(() => {
+            foldersElements.folderModalInput.focus();
+            foldersElements.folderModalInput.select();
+        });
+    }
+}
+
+function modoCriar(modo) {
+    if (modo === "criar") {
+        foldersElements.folderModalTitle.textContent = "Nova pasta";
+        foldersElements.folderModalDescription.textContent = "Organize suas notas em uma pasta.";
+        foldersElements.folderModalSubmit.textContent = "Criar pasta";
+        foldersElements.folderModalInput.value = "";
+        foldersElements.folderModalSubmit.style.background = "";
+        foldersElements.folderModalSubmit.style.borderColor = "";
+    }
+}
+
+function modoRenomear(modo, pasta) {
+    if (modo === "renomear") {
+        foldersElements.folderModalTitle.textContent = "Renomear pasta";
+        foldersElements.folderModalDescription.textContent = "Escolha um novo nome para esta pasta.";
+        foldersElements.folderModalSubmit.textContent = "Salvar alterações";
+        foldersElements.folderModalInput.value = pasta.nome;
+        foldersElements.folderModalSubmit.style.background = "";
+        foldersElements.folderModalSubmit.style.borderColor = "";
+    }
+}
+
+function modoExcluir(modo, pasta) {
+    if (modo === "excluir") {
+        foldersElements.folderModalTitle.textContent = "Excluir pasta";
+        foldersElements.folderModalDescription.textContent = `Tem certeza de que deseja excluir "${pasta.nome}"? As notas serão mantidas, mas ficarão sem pasta.`;
+
+        foldersElements.folderModalInput.hidden = true;
+        foldersElements.folderModalInput.style.display = "none";
+        foldersElements.folderModalLabel.hidden = true;
+        foldersElements.folderModalLabel.style.display = "none";
+        foldersElements.folderModalInput.required = false;
+
+        foldersElements.folderModalSubmit.textContent = "Excluir pasta";
+        foldersElements.folderModalSubmit.style.background = "#dc3545";
+        foldersElements.folderModalSubmit.style.borderColor = "#dc3545";
+    }
+}
+
+function fecharModalPasta() {
+    foldersElements.folderModal.hidden = true;
+    document.body.style.overflow = "";
+
+    foldersElements.folderModalForm.reset();
+    
+    foldersElements.folderModalInput.hidden = false;
+    foldersElements.folderModalInput.style.display = "";
+    foldersElements.folderModalLabel.hidden = false;
+    foldersElements.folderModalLabel.style.display = "";
+    foldersElements.folderModalInput.required = true;
+    
+    foldersElements.folderModalSubmit.hidden = false;
+    foldersElements.folderModalSubmit.style.display = "";
+    foldersElements.folderModalSubmit.style.background = "";
+    foldersElements.folderModalSubmit.style.borderColor = "";
+
+    foldersElements.folderModalError.hidden = true;
+
+    pastaEmEdicao = null;
+    pastaParaExcluir = null;
+}
+
+foldersElements.folderModal.querySelectorAll("[data-close-folder-modal]").forEach((elemento) => {
+    elemento.addEventListener("click", fecharModalPasta);
+});
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !foldersElements.folderModal.hidden) {
+        fecharModalPasta();
+    }
+});
+
+foldersElements.addFolderBtn.addEventListener("click", () => {
+    abrirModalPasta("criar");
+});
+
+foldersElements.folderModalForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    foldersElements.folderModalError.hidden = true;
+
+    const nome = foldersElements.folderModalInput.value.trim();
+
+    if (modoModalPasta !== "excluir" && !nome) {
+        foldersElements.folderModalError.textContent = "Informe o nome da pasta.";
+        foldersElements.folderModalError.hidden = false;
+        foldersElements.folderModalInput.focus();
+        return;
+    }
+
+    foldersElements.folderModalSubmit.disabled = true;
+
+    try {
+        switch (modoModalPasta) {
+            case "criar": 
+                await criarPasta(nome); 
+                mostrarToast("Pasta criada com sucesso!");
+                break
+            case "renomear": 
+                await atualizarPasta(pastaEmEdicao.id, {nome: nome}); 
+                mostrarToast("Pasta renomeada com sucesso!");
+                break;
+            case "excluir": 
+                await excluirPasta(pastaParaExcluir.id); 
+                if (pastaSelecionada === pastaParaExcluir.id) pastaSelecionada = null;
+                mostrarToast("Pasta excluída com sucesso!");
+                break;
+            default:
+                break;
+        }
+
+        fecharModalPasta();
+        await renderizarPastas();
+
+    } catch (error) {
+        foldersElements.folderModalError.textContent = error.message;
+        foldersElements.folderModalError.hidden = false;
+    } finally {
+        foldersElements.folderModalSubmit.disabled = false;
+    }
+});
+
+async function renderizarPastas() {
+    const pastas = await buscarPastas();
+
+    foldersElements.foldersList.replaceChildren();
+
+    pastas.forEach((pasta) => {
+        foldersElements.foldersList.appendChild(criarItemPasta(pasta))
+    })
+}
+
+function criarItemPasta(pasta) {
+    const item = document.createElement("div");
+    item.className = "folder-item";
+    if (pastaSelecionada === pasta.id) item.classList.add("active");
+
+    const abrir = document.createElement("button");
+    abrir.type = "button";
+    abrir.className = "folder-open";
+    abrir.setAttribute("aria-label", `Abrir pasta ${pasta.nome}`);
+    abrir.innerHTML = '<i class="fa-regular fa-folder"></i>';
+
+    const nome = document.createElement("span");
+    nome.className = "folder-name";
+    nome.textContent = pasta.nome;
+    nome.title = pasta.nome;
+
+    const menu = document.createElement("button");
+    menu.type = "button";
+    menu.className = "folder-menu";
+    menu.setAttribute("aria-label", `Opções da pasta ${pasta.nome}`);
+    menu.innerHTML = '<i class="fa-solid fa-ellipsis"></i>';
+
+    item.append(abrir, nome, menu);
+
+    vincularEventosPasta(pasta, { abrir, nome, menu });
+
+    return item;
+}
+
+function vincularEventosPasta(pasta, { abrir, nome, menu }) {
+    abrir.addEventListener("click", async () => {
+        pastaSelecionada = pasta.id;
+        await renderizarPastas();
+        await atualizarNotas();
+        mostrarTela(notesElements.notesContainer)
+    })
+
+    nome.addEventListener("dblclick", () => abrirModalPasta("renomear", pasta));
+    menu.addEventListener("click", () => abrirModalAcoesPasta(pasta))
+}
+
+function abrirModalAcoesPasta(pasta) {
+    const { folderModal, folderModalTitle, folderModalDescription,
+            folderModalForm, folderModalInput, folderModalSubmit } = foldersElements;
+
+    if (!folderModal || !folderModalTitle || !folderModalDescription ||
+        !folderModalForm || !folderModalInput || !folderModalSubmit) {
+        mostrarToast("Não foi possível abrir as opções da pasta.", "#d41b18");
+        return;
+    }
+
+    foldersElements.folderModalAcoesFechar?.remove();
+
+    folderModalTitle.textContent = pasta.nome;
+    folderModalDescription.textContent = "O que você deseja fazer com esta pasta?";
+
+    folderModalInput.hidden = true;
+    folderModalInput.style.display = "none";
+    folderModalInput.required = false;
+
+    foldersElements.folderModalLabel.hidden = true;
+    foldersElements.folderModalLabel.style.display = "none";
+
+    folderModalSubmit.hidden = true;
+    folderModalSubmit.style.display = "none";
+
+    folderModal.hidden = false;
+    document.body.style.overflow = "hidden";
+
+    criarAcoesExtrasPasta(pasta);
+}
+
+function criarAcoesExtrasPasta(pasta) {
+    const acoes = document.createElement("div");
+    acoes.className = "folder-modal-extra-actions";
+
+    const renomear = document.createElement("button");
+    renomear.type = "button";
+    renomear.className = "folder-modal-cancel";
+    renomear.textContent = "Renomear";
+
+    const excluir = document.createElement("button");
+    excluir.type = "button";
+    excluir.className = "folder-modal-submit btn-danger";
+    excluir.textContent = "Excluir pasta";
+
+    acoes.append(renomear, excluir);
+    foldersElements.folderModalForm.appendChild(acoes);
+
+    renomear.addEventListener("click", () => {
+        acoes.remove();
+        abrirModalPasta("renomear", pasta);
+    });
+
+    excluir.addEventListener("click", () => {
+        acoes.remove();
+        abrirModalPasta("excluir", pasta);
+    });
+
+    return acoes;
+}
+
+async function mostrarTodasAsNotas() {
+    pastaSelecionada = null;
+    await renderizarPastas();
+    await atualizarNotas();
+}
+
+async function abrirSeletorPasta(notaId, pastaIdAtual, botao) {
+    try {
+        const pastas = await buscarPastas();
+
+        document.querySelector(".note-folder-select")?.remove();
+
+        const select = criarSelectPastas(pastas, pastaIdAtual);
+
+        botao.insertAdjacentElement("afterend", select)
+        select.focus();
+
+        vincularEventosSelect(select, notaId, botao);
+    } catch (error) {
+        mostrarToast("Não foi possivel carregar as pastas.", "#d41b18")
+    }
+}
+
+function criarSelectPastas(pastas, pastaIdAtual) {
+    const select = document.createElement("select");
+    select.className = "note-folder-select";
+    select.setAttribute("aria-label", "Escolher pasta de destino");
+
+    const opcaoSemPasta = document.createElement("option");
+    opcaoSemPasta.value = "";
+    opcaoSemPasta.textContent = "Sem pasta";
+    if (!pastaIdAtual) opcaoSemPasta.selected = true;
+    select.appendChild(opcaoSemPasta);
+
+    pastas.forEach((pasta) => {
+        const opcao = document.createElement("option");
+        opcao.value = pasta.id;
+        opcao.textContent = pasta.nome;
+
+        if (String(pasta.id) === String(pastaIdAtual)) {
+            opcao.selected = true;
+        }
+
+        select.appendChild(opcao);
+    });
+
+    return select;
+}
+
+function vincularEventosSelect(select, notaId, botao) {
+    select.addEventListener("change", async () => {
+        await moverNotaParaPasta(notaId, select.value || null);
+        select.remove();
+    });
+
+    setTimeout(() => {
+        const fecharSelect = (e) => {
+            if (!select.contains(e.target) && e.target !== botao) {
+                select.remove();
+                document.removeEventListener("click", fecharSelect);
+            }
+        };
+        document.addEventListener("click", fecharSelect);
+    }, 0);
+}

@@ -12,7 +12,7 @@ from django.db.models.lookups import (
     PostgresOperatorLookup,
     Transform,
 )
-from django.utils.deprecation import RemovedInDjango70Warning, django_file_prefixes
+from django.utils.deprecation import RemovedInDjango2028Warning, django_file_prefixes
 from django.utils.translation import gettext_lazy as _
 
 from . import Field
@@ -313,7 +313,7 @@ class CaseInsensitiveMixin:
 
 
 class JSONExact(lookups.Exact):
-    # RemovedInDjango70Warning: When the deprecation period is over, remove
+    # RemovedInDjango2028Warning: When the deprecation period is over, remove
     # the following line.
     can_use_none_as_rhs = True
 
@@ -323,13 +323,13 @@ class JSONExact(lookups.Exact):
                 "Using None as the right-hand side of an exact lookup on JSONField to "
                 "mean JSON scalar 'null' is deprecated. Use JSONNull() instead (or use "
                 "the __isnull lookup if you meant SQL NULL).",
-                RemovedInDjango70Warning,
+                RemovedInDjango2028Warning,
                 skip_file_prefixes=django_file_prefixes(),
             )
 
         rhs, rhs_params = super().process_rhs(compiler, connection)
 
-        # RemovedInDjango70Warning: When the deprecation period is over, remove
+        # RemovedInDjango2028Warning: When the deprecation ends, remove
         # The following if-block entirely.
         # Treat None lookup values as null.
         if rhs == "%s" and (*rhs_params,) == (None,):
@@ -411,6 +411,14 @@ class JSONIn(ProcessJSONLHSMixin, lookups.In):
         if not connection.features.has_native_json_field and (
             not hasattr(param, "as_sql") or isinstance(param, expressions.Value)
         ):
+            if isinstance(param, expressions.Value) and not isinstance(
+                param._output_field_or_none, JSONField
+            ):
+                output_field = param._output_field_or_none
+                value = param.value
+                if output_field is not None:
+                    value = output_field.get_prep_value(value)
+                params = [connection.ops.adapt_json_value(value, None)]
             if connection.vendor == "oracle":
                 value = param.value if hasattr(param, "value") else json.loads(param)
                 sql = "%s(JSON_OBJECT('value' VALUE %%s FORMAT JSON), '$.value')"
@@ -432,6 +440,13 @@ class JSONIn(ProcessJSONLHSMixin, lookups.In):
         if isinstance(self.lhs, KeyTransform):
             return sql, params
         if connection.vendor == "mysql":
+            if connection.mysql_is_mariadb:
+                # lookup_cast() has applied JSON_UNQUOTE() to the lhs, so
+                # build the extract-then-unquote order from the raw column.
+                sql, params = compiler.compile(self.lhs)
+                sql, params = self._process_as_mysql(sql, params, connection)
+                sql = "JSON_UNQUOTE(%s)" % sql
+                return sql, params
             return self._process_as_mysql(sql, params, connection)
         elif connection.vendor == "oracle":
             return self._process_as_oracle(sql, params, connection)
@@ -598,7 +613,7 @@ class KeyTransformIn(JSONIn):
 
 
 class KeyTransformExact(JSONExact):
-    # RemovedInDjango70Warning: When deprecation period ends, uncomment the
+    # RemovedInDjango2028Warning: When deprecation period ends, uncomment the
     # flag below.
     # can_use_none_as_rhs = True
 
