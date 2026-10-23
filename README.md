@@ -100,7 +100,7 @@ python -m venv .venv
 ### 4. Instale as dependências
 
 ```bash
-python -m pip install django
+python -m pip install -r requirements.txt
 ```
 
 ### 5. Execute as migrações
