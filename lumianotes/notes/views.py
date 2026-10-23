@@ -115,23 +115,23 @@ def nota_detail(request, id):
 
         dados = json.loads(request.body)
 
-        if "favorito" in dados:
-            nota.favorito = dados["favorito"]
-
-        if "arquivado" in dados:
-            nota.arquivado = dados["arquivado"]
-
-        if "pasta_id" in dados:
-            pasta_id = dados["pasta_id"]
-
-            if pasta_id in (None, ""):
-                nota.pasta = None
-            else:
-                nota.pasta = obter_pasta_do_usuario(
-                    request,
-                    pasta_id
-                )
-
+        for campo, valor in dados.items():
+            match campo:
+                case "favorito":
+                    nota.favorito = valor
+                case "arquivado":
+                    nota.arquivado = valor
+                case "pasta_id":
+                    nota.pasta = (
+                        None if valor in (None, "")
+                        else obter_pasta_do_usuario(request, valor)
+                    )
+                case "titulo":
+                    nota.titulo = valor.strip()
+                case "conteudo":
+                    nota.conteudo = valor.strip()
+                case "tags":
+                    nota.tags = valor
 
         nota.save()
 

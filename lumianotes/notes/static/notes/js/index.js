@@ -197,8 +197,6 @@ sidebarElements.sidebarArquivBtn.addEventListener("click", () => {
     mostrarTela(notesElements.notasContArchive);
 });
 
-//
-
 perfilconfigbtn.addEventListener("change", (event) => {
     event.target.checked ? perfilconfig.classList.add("ativo") : perfilconfig.classList.remove("ativo");
 });
@@ -241,21 +239,20 @@ navigationElements.listViewBtn.forEach((button) => {
 
 notesElements.newNote.forEach((button) => {
     button.addEventListener("click", () => {
-        notesElements.notesContainer.style.display = "none";
-        notesElements.notesEditor.style.display = "flex";
+        limparEditor();
+        pastaSelecionada = null;
+        mostrarTela(notesElements.notesEditor);
     });
 })
 
 // Retornar para a lista de notas
 
 navigationElements.viewReturnBtn.addEventListener("click", () => {
-    notesElements.notesContainer.style.display = "flex";
-    notesElements.viewNoteContainer.style.display = "none";
+    mostrarTela(notesElements.notesContainer);
 })
 
 navigationElements.editorReturnBtn.addEventListener("click", () => {
-    notesElements.notesContainer.style.display = "flex";
-    notesElements.notesEditor.style.display = "none";
+    mostrarTela(notesElements.notesContainer);
 })
 
 // Ajustar altura do textarea
@@ -538,27 +535,45 @@ async function buscarNota(id) {
 }
 
 async function salvarNota() {
-    const dados = new URLSearchParams();
+    const dados = {
+        titulo: editorElements.title.value.trim(),
+        conteudo: editorElements.textArea.value.trim(),
+        tags: tags_array,
+        pasta_id: pastaSelecionada
+    };
 
-    dados.append("titulo", editorElements.title.value);
-    dados.append("conteudo", editorElements.textArea.value);
-    dados.append("tags", JSON.stringify(tags_array));
-    dados.append("pasta_id", pastaSelecionada ?? "");
+    const editando = notaEmEdicao !== null;
 
-    const response = await fetch("/notes/api/notas/", {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": getCookie("csrftoken"),
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: dados
-    });
+    const response = await fetch(
+        editando
+            ? `/notes/api/notas/${notaEmEdicao}/`
+            : "/notes/api/notas/",
+        {
+            method: editando ? "PATCH" : "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                ...(editando
+                    ? { "Content-Type": "application/json" }
+                    : { "Content-Type": "application/x-www-form-urlencoded" })
+            },
+            body: editando
+                ? JSON.stringify(dados)
+                : new URLSearchParams({
+                    titulo: dados.titulo,
+                    conteudo: dados.conteudo,
+                    tags: JSON.stringify(dados.tags),
+                    pasta_id: dados.pasta_id ?? ""
+                })
+        }
+    );
+
+    const resultado = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-        throw new Error("Erro ao salvar nota.");
+        throw new Error(resultado.erro || "Erro ao salvar a nota.");
     }
 
-    return await response.json();
+    return resultado;
 }
 
 function atualizarContadorNotas(notas) {
@@ -566,6 +581,7 @@ function atualizarContadorNotas(notas) {
 }
 
 function limparEditor() {
+    notaEmEdicao = null;
     tags_array = [];
     editorElements.title.value = "";
     editorElements.textArea.value = "";
@@ -712,6 +728,12 @@ function criarCardNota(nota) {
     card.appendChild(content);
     card.appendChild(noteTags);
 
+    card.appendChild(criarFooter(nota))
+
+    return card;
+}
+
+function criarFooter(nota) {
     const noteFooter = document.createElement("div");
     noteFooter.className = "note-footer";
 
@@ -754,9 +776,7 @@ function criarCardNota(nota) {
         </ul>
     `;
 
-    card.appendChild(noteFooter)
-
-    return card;
+    return noteFooter
 }
 
 function renderizarNotas(lista, container) {
@@ -870,11 +890,14 @@ function preencherConteudoNota(nota) {
     notesElements.viewNote.appendChild(viewNoteContent);
 }
 
+let notaVisualizadaId = null;
+
 async function exibirNotasView(id) {
 
     try {
 
         const nota = await buscarNota(id);
+        notaVisualizadaId = nota.id;
 
         if (!nota) return;
 
@@ -889,6 +912,67 @@ async function exibirNotasView(id) {
             "Erro ao carregar a nota.",
             "#d41b18"
         );
+    }
+}
+
+document.getElementById("view-note-edit").addEventListener("click", () => {
+    const titulo = document.getElementById("view-note-title");
+
+    if (!titulo) return;
+
+    if (notaVisualizadaId !== null) {
+        editarNota(notaVisualizadaId);
+    }
+});
+
+// Função de editar as notas
+
+let notaEmEdicao = null;
+
+async function editarNota(id) {
+    try {
+        const nota = await buscarNota(id);
+
+        notaEmEdicao = nota.id;
+        pastaSelecionada = nota.pasta_id ?? null;
+
+        editorElements.title.value = nota.titulo;
+        editorElements.textArea.value = nota.conteudo;
+
+        tags_array = [...nota.tags];
+
+        editorElements.editorTagsContainer.innerHTML = "";
+
+        tags_array.forEach(tag => {
+            const tagElement = document.createElement("div");
+            tagElement.className = "editor-note-tag";
+
+            const tagText = document.createElement("span");
+            tagText.textContent = tag;
+
+            const removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.className = "remove-editor-tag";
+            removeButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+
+            removeButton.addEventListener("click", () => {
+                tags_array = tags_array.filter(item => item !== tag);
+                tagElement.remove();
+            });
+
+            tagElement.append(tagText, removeButton);
+            editorElements.editorTagsContainer.appendChild(tagElement);
+        });
+
+        mostrarTela(notesElements.notesEditor);
+
+        requestAnimationFrame(() => {
+            ajustarAlturaTextarea();
+        });
+
+    } catch (error) {
+        console.error(error);
+        mostrarToast("Não foi possível abrir a nota para edição.", "#d41b18");
     }
 }
 
@@ -936,6 +1020,16 @@ async function exibirNotasView(id) {
             return;
         }
 
+        // Editar nota pelo card
+        const editBtn = event.target.closest(".note-edit");
+
+        if (editBtn) {
+            const card = editBtn.closest(".notes");
+            const id = card.dataset.id;
+
+            editarNota(id);
+            return;
+        }
     });
 
 });
@@ -1088,6 +1182,8 @@ searchElements.searchInput.forEach(input => {
     });
 
 });
+
+// Funções referentes ao sistema de pastas
 
 async function buscarPastas() {
     const response = await fetch("/notes/api/pastas/");
